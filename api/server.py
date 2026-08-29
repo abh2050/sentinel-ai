@@ -4,6 +4,7 @@ Exposes endpoints for telemetry, incidents, chaos simulation, PR diff reviews, a
 """
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from pydantic import BaseModel
 from typing import Dict, Any, Optional, List
 import asyncio
@@ -18,10 +19,19 @@ from sentinel_core.orchestrator import orchestrator
 from sentinel_core.safety_policy import safety_enforcer
 from api.traffic_generator import traffic_generator
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await traffic_generator.start()
+    yield
+    # Shutdown
+    await traffic_generator.stop()
+
 app = FastAPI(
     title="SentinelAI Reliability Mission Control",
     description="Autonomous AI Reliability & Incident Response Platform with Automated PR Remediation",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -31,14 +41,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.on_event("startup")
-async def startup_event():
-    await traffic_generator.start()
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    await traffic_generator.stop()
 
 # ----------------- TELEMETRY & SYSTEM HEALTH -----------------
 
@@ -75,12 +77,10 @@ async def list_chaos_scenarios():
 async def trigger_chaos_incident(req: ChaosTriggerRequest):
     try:
         inject_res = inject_scenario(req.scenario_id)
-        # Force a few rapid synthetic queries to update rolling telemetry
         for _ in range(5):
             res = rag_engine.query("How does Raft handle leader partition?")
             metrics_collector.record_query_event(res)
             
-        # Detect anomaly
         detected = anomaly_detector.check_for_anomalies()
         incident_id = None
         if detected:
@@ -120,7 +120,6 @@ async def trigger_agent_pipeline_manual(incident_id: str):
     inc = orchestrator.get_incident(incident_id)
     if not inc:
         raise HTTPException(status_code=404, detail="Incident not found")
-    # Re-run pipeline
     payload = {
         "incident_id": inc.incident_id,
         "title": inc.title,
@@ -140,7 +139,6 @@ class HumanDecisionRequest(BaseModel):
 async def approve_and_merge_pr(incident_id: str, req: HumanDecisionRequest):
     try:
         updated = orchestrator.approve_and_merge_pr(incident_id, reviewer_name=req.reviewer_name)
-        # Push healthy queries to instantly normalize telemetry
         for _ in range(10):
             res = rag_engine.query("What are vector database indexing best practices?")
             metrics_collector.record_query_event(res)
