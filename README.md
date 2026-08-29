@@ -59,13 +59,21 @@ Operating autonomous agentic workflows and RAG systems in production presents un
 
 ---
 
-## 🚀 Quickstart (1-Command Launch)
+## 🚀 Quickstart
 
 ### Prerequisites
 - Python 3.10+
 - Node.js 18+ and npm
 
-### 1. Launch Platform
+### 1. Install Dependencies
+`scripts/start.sh` and `scripts/test.sh` expect a local `.venv` and installed dashboard packages, so run this once after cloning:
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+cd dashboard && npm install && cd ..
+```
+
+### 2. Launch Platform
 ```bash
 bash scripts/start.sh
 ```
@@ -73,7 +81,7 @@ bash scripts/start.sh
 - **Mission Control Dashboard**: `http://localhost:5173`
 - **FastAPI REST API / Docs**: `http://localhost:8000/docs`
 
-### 2. Run Test Suite
+### 3. Run Test Suite
 ```bash
 bash scripts/test.sh
 ```
@@ -100,6 +108,8 @@ A configuration drift or rogue commit increases retrieval `top_k` from `5` to `3
 ### 3. Automated Pull Request & Human Review
 The agent opens Pull Request `fix/inc-2026-0042-retriever-latency` containing the validation scorecard.
 The Lead SRE reviews the diff in the mission control console, clicks **"Approve & Merge"**, and the fix is safely deployed.
+
+> **Note on scope**: this is a self-contained simulation for demonstrating the architecture and safety pattern end-to-end — telemetry, chaos injection, and the "PR" opened by the GitHub Agent are all generated in-process (no live GitHub API calls, no real production traffic). The design — agent boundaries, the safety-policy enforcer, and the human-approval gate — is meant to carry over directly to a real GitHub/observability integration.
 
 ---
 
