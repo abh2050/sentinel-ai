@@ -1,0 +1,40 @@
+# Single-node SentinelAI deployment.
+#
+#   cp .env.example .env   # then edit
+#   docker compose up -d
+#
+# The API and the built dashboard are served from one container on port 8000.
+
+services:
+  sentinel:
+    build: .
+    image: sentinel-ai:latest
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      # Explicit here so `docker compose up` without an edited .env still
+      # starts in the safe mode rather than inheriting a demo default.
+      SENTINEL_DEPLOYMENT_MODE: ${SENTINEL_DEPLOYMENT_MODE:-production}
+    volumes:
+      # Telemetry source catalog, mounted read-only so a running container
+      # cannot rewrite its own source definitions.
+      - ./config:/app/config:ro
+      # Canonical-record landing zone. Named volume so it survives redeploys.
+      - sentinel-landing:/app/data/landing
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=4).status==200 else 1)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  sentinel-landing:

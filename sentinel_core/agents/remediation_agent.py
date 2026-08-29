@@ -2,7 +2,9 @@
 Remediation Agent
 Synthesizes surgical code and configuration patches, git branch names, commit messages, and PR descriptions.
 """
+import re
 import time
+from pathlib import Path
 from typing import Dict, Any
 from sentinel_core.models import IncidentRecord, RemediationProposal, IncidentStatus
 from sentinel_core.safety_policy import safety_enforcer
@@ -42,11 +44,13 @@ class RemediationAgent:
             file_path="rag_service/config.py",
             diff=proposed_diff,
             remediation_strategy="Two-stage retrieval architecture: Candidate retrieval with top_k=8 + Flash-Reranker filtering to top_n=5 most relevant chunks.",
+            file_changes=self._build_file_changes(),
             created_at=time.time()
         )
         
         incident.remediation = proposal
         incident.status = IncidentStatus.REMEDIATING
+
         incident.agent_logs.append({
             "timestamp": time.time(),
             "agent": self.agent_name,
@@ -54,5 +58,47 @@ class RemediationAgent:
             "details": f"Generated surgical patch for 'rag_service/config.py'. Target branch: '{branch_name}'."
         })
         return incident
+
+    def _build_file_changes(self) -> Dict[str, str]:
+        """
+        Produce the actual post-fix file content to commit.
+
+        Read the current file from disk and apply the parameter changes to it,
+        rather than shipping a hardcoded copy: a stored snapshot would silently
+        revert every unrelated edit made to the config since this agent was
+        written. If the file cannot be read, return nothing — an empty change
+        set makes the GitHub client refuse to open an empty PR, which is the
+        correct outcome, rather than committing a stale file.
+        """
+        source_path = Path(__file__).resolve().parents[2] / "rag_service" / "config.py"
+        try:
+            content = source_path.read_text(encoding="utf-8")
+        except OSError:
+            return {}
+
+        # Match whatever value is currently declared rather than the incident's
+        # runtime value. The injected fault (top_k=30) is an in-memory mutation
+        # that never reaches the file, so matching on it would silently patch
+        # nothing and commit an unchanged file.
+        substitutions = [
+            (r"(top_k:\s*int\s*=\s*Field\(default=)\d+", r"\g<1>8"),
+            (r"(reranker_enabled:\s*bool\s*=\s*Field\(default=)(True|False)", r"\g<1>True"),
+        ]
+
+        patched = content
+        for pattern, replacement in substitutions:
+            patched, count = re.subn(pattern, replacement, patched, count=1)
+            if count == 0:
+                # The file no longer looks the way this remediation expects.
+                # Returning nothing makes the GitHub client refuse to open the
+                # PR, which is correct: better no PR than one that silently
+                # changes nothing while claiming to fix the incident.
+                return {}
+
+        if patched == content:
+            return {}
+
+        return {"rag_service/config.py": patched}
+
 
 remediation_agent = RemediationAgent()

@@ -1,16 +1,16 @@
 # SentinelAI: Live System Demonstration & Incident Playbook
 
-## 🎯 Purpose
+## Purpose
 A guided demonstration walkthrough for evaluating SentinelAI's autonomous reliability engineering, root cause analysis, and automated Pull Request remediation capabilities on production Agentic AI and RAG applications.
 
 ---
 
-## 🎙️ Executive Summary
+## Executive Summary
 > "SentinelAI provides automated reliability engineering for production Agentic AI systems: continuously monitoring latency, cost, and hallucination scores, autonomously diagnosing root causes, running sandboxed regression tests, and opening human-reviewed GitHub Pull Requests to safely remediate incidents."
 
 ---
 
-## 🎬 Step-by-Step Demo Flow
+## Step-by-Step Demo Flow
 
 ### 1. Steady State Observation
 - Open Mission Control (`http://localhost:5173`).

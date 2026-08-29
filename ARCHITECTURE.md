@@ -120,11 +120,11 @@ Hardcoded architectural rules:
 
 | Action | AI Permission | Human Operator Permission |
 | :--- | :---: | :---: |
-| **Detect Incidents** | ✅ PERMITTED | ✅ PERMITTED |
-| **Investigate Root Cause** | ✅ PERMITTED | ✅ PERMITTED |
-| **Synthesize Fixes** | ✅ PERMITTED | ✅ PERMITTED |
-| **Create Branches & Tests** | ✅ PERMITTED | ✅ PERMITTED |
-| **Open Pull Requests** | ✅ PERMITTED | ✅ PERMITTED |
-| **Auto-Merge Pull Request** | 🚫 **BLOCKED** | ✅ **PERMITTED** |
-| **Direct Push to Main/Prod** | 🚫 **BLOCKED** | ✅ **PERMITTED** |
-| **Override Failed Tests** | 🚫 **BLOCKED** | ✅ **PERMITTED** |
+| **Detect Incidents** | PERMITTED | PERMITTED |
+| **Investigate Root Cause** | PERMITTED | PERMITTED |
+| **Synthesize Fixes** | PERMITTED | PERMITTED |
+| **Create Branches & Tests** | PERMITTED | PERMITTED |
+| **Open Pull Requests** | PERMITTED | PERMITTED |
+| **Auto-Merge Pull Request** | **BLOCKED** | **PERMITTED** |
+| **Direct Push to Main/Prod** | **BLOCKED** | **PERMITTED** |
+| **Override Failed Tests** | **BLOCKED** | **PERMITTED** |

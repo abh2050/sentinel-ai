@@ -51,6 +51,11 @@ class RemediationProposal(BaseModel):
     file_path: str
     diff: str
     remediation_strategy: str
+    # Repository-relative path -> complete new file content. `diff` is for
+    # humans to read; this is what actually gets committed. Full content rather
+    # than a patch, because the GitHub contents API writes whole files and
+    # re-applying a patch against a moved base corrupts silently.
+    file_changes: Dict[str, str] = {}
     created_at: float = Field(default_factory=time.time)
 
 class ValidationMetricComparison(BaseModel):
@@ -82,6 +87,9 @@ class PullRequestPayload(BaseModel):
     incident_id: str
     pr_number: int
     pr_url: str
+    # True when no real PR was opened (demo mode or unconfigured GitHub), so
+    # the UI and API never imply a pull request exists when it does not.
+    simulated: bool = True
     branch_name: str
     title: str
     body_markdown: str

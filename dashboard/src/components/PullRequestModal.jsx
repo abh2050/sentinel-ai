@@ -153,7 +153,7 @@ export default function PullRequestModal({ incident, isOpen, onClose, onApprove,
               className="px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-mono font-semibold transition-all shadow-lg shadow-emerald-600/30 flex items-center gap-2 hover:scale-[1.02]"
             >
               <UserCheck className="w-4 h-4" />
-              {pr.status === 'MERGED' ? 'Merged & Deployed ✓' : 'Approve & Merge to Main →'}
+              {pr.status === 'MERGED' ? 'Merged & Deployed' : 'Approve & Merge to Main →'}
             </button>
           </div>
         </div>

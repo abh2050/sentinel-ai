@@ -5,7 +5,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 echo "================================================================="
-echo "  🛡️  SentinelAI — Autonomous AI Reliability & Incident Response "
+echo "  SentinelAI - Autonomous AI Reliability & Incident Response"
 echo "      Detect → Diagnose → Propose → Validate → Human Review     "
 echo "================================================================="
 
@@ -32,7 +32,7 @@ cleanup() {
 trap cleanup SIGINT SIGTERM EXIT
 
 echo ""
-echo "🚀 SentinelAI is LIVE!"
+echo "SentinelAI is running."
 echo "   -> Mission Control Dashboard: http://localhost:5173"
 echo "   -> REST API / Swagger Docs:  http://localhost:8000/docs"
 echo ""

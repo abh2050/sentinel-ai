@@ -10,5 +10,5 @@ dist/
 # Ingestion landing zone (regenerated at runtime)
 data/landing/
 
-# Playwright browser binaries + screenshot tooling deps
-docs/screenshots/.playwright/
+# Local environment configuration (never commit real credentials)
+.env
