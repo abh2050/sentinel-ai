@@ -35,6 +35,7 @@ export default function PullRequestModal({ incident, isOpen, onClose, onApprove,
           </div>
           <button
             onClick={onClose}
+            aria-label="Close pull request review"
             className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
           >
             <X className="w-5 h-5" />

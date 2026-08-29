@@ -24,6 +24,62 @@ def test_api_metrics_live():
     assert "avg_cost_usd" in data
     assert "timeseries" in data
 
+def test_api_ingestion_reset_before_first_run_does_not_deadlock():
+    """
+    Reset must work as the very first ingestion call.
+
+    `reset` holds the service lock and then builds the pipeline lazily, which
+    takes the lock again. With a non-reentrant lock that deadlocks the worker
+    thread and hangs the API — and only on this call ordering, since any prior
+    call would have already built the pipeline.
+    """
+    from api.ingestion_service import IngestionService
+
+    service = IngestionService()  # Fresh: pipeline not yet built.
+    result = service.reset()
+    assert result["success"] is True
+    assert service.run_once()["records_loaded"] > 0
+
+
+def test_api_ingestion_sources_lists_connected_backends():
+    resp = client.get("/api/ingestion/sources")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["total"] == 4
+    assert {s["kind"] for s in data["sources"]} == {"otlp", "prometheus", "datadog", "jsonl"}
+
+
+def test_api_ingestion_run_loads_and_reports_quality():
+    client.post("/api/ingestion/reset")
+
+    resp = client.post("/api/ingestion/run")
+    assert resp.status_code == 200
+    report = resp.json()["report"]
+
+    assert report["records_loaded"] > 0
+    assert report["sources_healthy"] == 4
+    # The fixtures seed one record per failure mode; all must be quarantined.
+    assert report["quality"]["rejected"] >= 4
+    assert report["quality"]["dead_letter_samples"]
+
+
+def test_api_ingestion_report_is_cached_after_a_run():
+    client.post("/api/ingestion/run")
+    resp = client.get("/api/ingestion/report")
+    assert resp.status_code == 200
+    assert resp.json()["has_run"] is True
+
+
+def test_api_ingestion_watermark_suppresses_replay():
+    """A second poll of an unchanged source must not re-load the same records."""
+    client.post("/api/ingestion/reset")
+    first = client.post("/api/ingestion/run").json()["report"]
+    second = client.post("/api/ingestion/run").json()["report"]
+
+    assert first["records_loaded"] > 0
+    assert second["records_loaded"] == 0
+
+
 def test_api_chaos_and_pr_approval_workflow():
     clear_chaos()
     

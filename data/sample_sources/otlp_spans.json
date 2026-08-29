@@ -1,0 +1,2078 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "rag-service"
+            }
+          },
+          {
+            "key": "deployment.environment",
+            "value": {
+              "stringValue": "production"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "sentinel.instrumentation.rag",
+            "version": "1.0.0"
+          },
+          "spans": [
+            {
+              "traceId": "00000000000000000000000000000000",
+              "spanId": "0000000000000000",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004800000000000",
+              "endTimeUnixNano": "1788004802148000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1031"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "267"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1298"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.0316
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9532
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9104
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9616
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000001",
+              "spanId": "0000000000000001",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004810000000000",
+              "endTimeUnixNano": "1788004812278000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "941"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "308"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1249"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.0321
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9421
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9194
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9428
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000002",
+              "spanId": "0000000000000002",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004820000000000",
+              "endTimeUnixNano": "1788004822155000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1180"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "222"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1402"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03097
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9291
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9212
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.958
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000003",
+              "spanId": "0000000000000003",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004830000000000",
+              "endTimeUnixNano": "1788004831990000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "980"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "227"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1207"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02821
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9594
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9357
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9599
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000004",
+              "spanId": "0000000000000004",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004840000000000",
+              "endTimeUnixNano": "1788004841989000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1005"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "257"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1262"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03045
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9398
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9311
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9248
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000005",
+              "spanId": "0000000000000005",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004850000000000",
+              "endTimeUnixNano": "1788004852169000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1161"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "216"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1377"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02611
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9523
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9299
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9212
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000006",
+              "spanId": "0000000000000006",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004860000000000",
+              "endTimeUnixNano": "1788004862017999999",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1064"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "268"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1332"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02877
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9569
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9236
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9394
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000007",
+              "spanId": "0000000000000007",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004870000000000",
+              "endTimeUnixNano": "1788004872418000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "980"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "286"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1266"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02853
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9492
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.8935
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9193
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000008",
+              "spanId": "0000000000000008",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004880000000000",
+              "endTimeUnixNano": "1788004882187000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "943"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "270"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1213"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03224
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9657
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9475
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9583
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000009",
+              "spanId": "0000000000000009",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004890000000000",
+              "endTimeUnixNano": "1788004892311000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1122"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "212"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1334"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02705
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9465
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9315
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9646
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000000a",
+              "spanId": "000000000000000a",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004900000000000",
+              "endTimeUnixNano": "1788004902633000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1154"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "237"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1391"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02451
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9254
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9061
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9195
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000000b",
+              "spanId": "000000000000000b",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004910000000000",
+              "endTimeUnixNano": "1788004912199000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1014"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "210"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1224"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03333
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9503
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9394
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9524
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000000c",
+              "spanId": "000000000000000c",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004920000000000",
+              "endTimeUnixNano": "1788004922119000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1108"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "203"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1311"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03066
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9265
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9304
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9493
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000000d",
+              "spanId": "000000000000000d",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004930000000000",
+              "endTimeUnixNano": "1788004931746000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1084"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "257"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1341"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03275
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9207
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9323
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9645
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000000e",
+              "spanId": "000000000000000e",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004940000000000",
+              "endTimeUnixNano": "1788004942300000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "971"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "240"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1211"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03266
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.924
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9555
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9217
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000000f",
+              "spanId": "000000000000000f",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004950000000000",
+              "endTimeUnixNano": "1788004951925000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "993"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "279"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1272"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.0279
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9486
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9185
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9554
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000010",
+              "spanId": "0000000000000010",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004960000000000",
+              "endTimeUnixNano": "1788004961955000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "987"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "295"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1282"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03311
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9535
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9107
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9312
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000011",
+              "spanId": "0000000000000011",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004970000000000",
+              "endTimeUnixNano": "1788004972256000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1149"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "242"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1391"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03301
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9593
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.8788
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9196
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000012",
+              "spanId": "0000000000000012",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004980000000000",
+              "endTimeUnixNano": "1788004982334000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1127"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "262"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1389"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02758
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9493
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9336
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9359
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000013",
+              "spanId": "0000000000000013",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788004990000000000",
+              "endTimeUnixNano": "1788004991857000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1048"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "225"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1273"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02623
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.943
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9311
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9489
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000014",
+              "spanId": "0000000000000014",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005000000000000",
+              "endTimeUnixNano": "1788005001754000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1037"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "267"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1304"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02643
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9562
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9256
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9103
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000015",
+              "spanId": "0000000000000015",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005010000000000",
+              "endTimeUnixNano": "1788005012171000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1020"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "170"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1190"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02866
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9232
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.915
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9303
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000016",
+              "spanId": "0000000000000016",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005020000000000",
+              "endTimeUnixNano": "1788005022067000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1102"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "176"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1278"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.0339
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9567
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9162
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.928
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000017",
+              "spanId": "0000000000000017",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005030000000000",
+              "endTimeUnixNano": "1788005032307000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1084"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "190"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1274"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.0282
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9418
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9162
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9577
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000018",
+              "spanId": "0000000000000018",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005040000000000",
+              "endTimeUnixNano": "1788005042134000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1123"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "209"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1332"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.02992
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9597
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.934
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9374
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "00000000000000000000000000000019",
+              "spanId": "0000000000000019",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005050000000000",
+              "endTimeUnixNano": "1788005052020000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1174"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "222"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1396"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03082
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9485
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.928
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9357
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000001a",
+              "spanId": "000000000000001a",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005060000000000",
+              "endTimeUnixNano": "1788005062292000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "898"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "246"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1144"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03394
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9228
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9247
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9323
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000001b",
+              "spanId": "000000000000001b",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005070000000000",
+              "endTimeUnixNano": "1788005072194000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1203"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "261"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1464"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03516
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.915
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.8997
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9473
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000001c",
+              "spanId": "000000000000001c",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005080000000000",
+              "endTimeUnixNano": "1788005082274000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "979"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "273"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1252"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03328
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9523
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.9198
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9275
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "0000000000000000000000000000001d",
+              "spanId": "000000000000001d",
+              "name": "rag.query",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1788005090000000000",
+              "endTimeUnixNano": "1788005091979000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.system",
+                  "value": {
+                    "stringValue": "anthropic"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1190"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "162"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.total_tokens",
+                  "value": {
+                    "intValue": "1352"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.cost_usd",
+                  "value": {
+                    "doubleValue": 0.03104
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 0.9308
+                  }
+                },
+                {
+                  "key": "rag.context_relevance",
+                  "value": {
+                    "doubleValue": 0.902
+                  }
+                },
+                {
+                  "key": "rag.answer_quality",
+                  "value": {
+                    "doubleValue": 0.9405
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            },
+            {
+              "traceId": "000000000000000000000000000003e7",
+              "spanId": "00000000000003e7",
+              "name": "rag.query",
+              "startTimeUnixNano": "1788005110000000000",
+              "endTimeUnixNano": "1788005112000000000",
+              "attributes": [
+                {
+                  "key": "gen_ai.usage.input_tokens",
+                  "value": {
+                    "intValue": "1000"
+                  }
+                },
+                {
+                  "key": "gen_ai.usage.output_tokens",
+                  "value": {
+                    "intValue": "200"
+                  }
+                },
+                {
+                  "key": "rag.retrieved_chunks",
+                  "value": {
+                    "intValue": "5"
+                  }
+                },
+                {
+                  "key": "rag.groundedness",
+                  "value": {
+                    "doubleValue": 94.5
+                  }
+                }
+              ],
+              "status": {
+                "code": "STATUS_CODE_UNSET"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

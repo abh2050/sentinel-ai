@@ -6,7 +6,13 @@ SentinelAI is an enterprise-grade autonomous reliability platform designed to op
 ```text
                          PRODUCTION AI APPLICATION
                                      │
-                        Telemetry, Spans & Triad Evals
+              OTLP spans │ Prometheus │ Datadog │ App JSONL logs
+                                     ▼
+                      ┌─────────────────────────────┐
+                      │ TELEMETRY INGESTION PIPELINE│
+                      │ Normalize · Enrich · Validate│
+                      └──────────────┬──────────────┘
+                                     │ canonical records
                                      ▼
                       ┌─────────────────────────────┐
                       │    OBSERVABILITY ENGINE     │
@@ -55,6 +61,30 @@ SentinelAI is an enterprise-grade autonomous reliability platform designed to op
 ---
 
 ## 2. Component Breakdown
+
+### A0. Telemetry Ingestion Pipeline (`ingestion/`)
+
+The data-engineering layer that connects SentinelAI to whatever observability stack already exists.
+
+**Stages** — `extract → normalize → enrich → validate → load`
+
+1. **Extract** (`connectors/`): One connector per backend. Each declares only how to fetch a raw payload and a `SourceMapping`; record selection, field mapping, watermarking, and error isolation are handled by the base class. Every remote connector supports an offline `fixture_path` so the pipeline is runnable and testable without vendor credentials.
+
+2. **Normalize** (`mapping.py`, `schema.py`): Declarative `FieldRule`s move vendor fields onto the `CanonicalTelemetryRecord` and apply a named unit converter. Canonical units are **seconds, USD, and 0–100** — reconciling nanosecond timestamps, micro-dollar billing, and 0–1 quality ratios across vendors. Adding a backend is a mapping declaration, not a new code path.
+
+   Metrics backends (Prometheus, Datadog) return pre-aggregated *series* rather than per-request events. `connectors/series.py` pivots independent series onto a shared time grid to reconstruct wide records. Buckets missing a required column are dropped, never zero-filled.
+
+3. **Enrich** (`transforms.py`): Derives fields a source omitted — `total_tokens` from its components, cost from token counts via a price book, canonical environment names from vendor spellings. Transforms are total and never raise; one failing transform cannot drop a record.
+
+4. **Validate** (`validation.py`): Four gates — completeness, range, freshness, deduplication — each returning a named rejection reason. Rejected records land in a bounded dead-letter buffer for inspection. Gates are tuned to reject *corrupt* data while passing *bad news* (a genuine 11.8s request is signal and must reach the detector).
+
+5. **Load** (`sinks.py`): Fans out to the live `MetricsCollector` and a durable JSONL landing zone. Records are merged across sources and sorted by event time before loading, since the collector maintains a rolling window and computes percentiles per arrival.
+
+**Operational properties**
+- **Fault isolation**: a fetch failure is captured per connector; one unreachable backend cannot stop ingestion from the others.
+- **Watermarking**: each connector tracks the newest emitted event time so repeated polls don't replay history.
+- **Deterministic ids**: `event_id` is derived from source, trace, and timestamp, making at-least-once delivery deduplicable.
+- **Observability**: every run returns a structured report — per-source counts, acceptance rate, rejection reasons, dead-letter samples. A silent pipeline is indistinguishable from a healthy one.
 
 ### A. Observability & Anomaly Telemetry Engine (`observability/`)
 - **Metrics Tracked**:

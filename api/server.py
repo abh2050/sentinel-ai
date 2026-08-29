@@ -18,6 +18,7 @@ from observability.anomaly_detector import anomaly_detector
 from sentinel_core.orchestrator import orchestrator
 from sentinel_core.safety_policy import safety_enforcer
 from api.traffic_generator import traffic_generator
+from api.ingestion_service import ingestion_service
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -63,6 +64,42 @@ async def get_system_status():
 @app.get("/api/metrics/live")
 async def get_live_metrics():
     return metrics_collector.get_current_metrics()
+
+# ----------------- TELEMETRY INGESTION PIPELINE -----------------
+
+@app.get("/api/ingestion/sources")
+async def list_ingestion_sources():
+    """Connector inventory: which telemetry backends are wired up."""
+    return ingestion_service.describe_sources()
+
+
+@app.post("/api/ingestion/run")
+async def run_ingestion_cycle():
+    """
+    Execute one extract -> normalize -> validate -> load cycle.
+
+    Runs off the event loop: connectors perform blocking file and HTTP reads,
+    which would otherwise stall every other request for the duration.
+    """
+    try:
+        report = await asyncio.to_thread(ingestion_service.run_once)
+        return {"success": True, "report": report}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/ingestion/report")
+async def get_last_ingestion_report():
+    """Most recent run report, or nulls before the first run."""
+    report = ingestion_service.last_report()
+    return {"has_run": report is not None, "report": report}
+
+
+@app.post("/api/ingestion/reset")
+async def reset_ingestion_watermarks():
+    """Rewind all source watermarks so the next run replays from the start."""
+    return ingestion_service.reset()
+
 
 # ----------------- CHAOS & INCIDENT INJECTION -----------------
 

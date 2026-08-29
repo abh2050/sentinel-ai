@@ -6,3 +6,9 @@ dist/
 .pytest_cache/
 *.log
 .DS_Store
+
+# Ingestion landing zone (regenerated at runtime)
+data/landing/
+
+# Playwright browser binaries + screenshot tooling deps
+docs/screenshots/.playwright/

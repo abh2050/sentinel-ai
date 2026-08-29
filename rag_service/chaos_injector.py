@@ -56,8 +56,16 @@ def inject_scenario(scenario_id: str) -> Dict[str, Any]:
     }
 
 def clear_chaos() -> Dict[str, Any]:
+    """
+    Clear the active fault and restore the healthy runtime configuration.
+
+    Clearing the marker without restoring the config would leave the injected
+    mutation (e.g. top_k=30) live while the dashboard reported a healthy
+    system — the fault would still be degrading every request.
+    """
     global ACTIVE_CHAOS_SCENARIO
     ACTIVE_CHAOS_SCENARIO = None
+    reset_to_healthy_baseline()
     return {
         "status": "cleared",
         "active_config": get_config().model_dump()

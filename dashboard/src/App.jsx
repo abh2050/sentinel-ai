@@ -3,6 +3,7 @@ import Navbar from './components/Navbar'
 import MetricCards from './components/MetricCards'
 import LiveCharts from './components/LiveCharts'
 import ChaosControls from './components/ChaosControls'
+import IngestionPanel from './components/IngestionPanel'
 import AgentTraceViewer from './components/AgentTraceViewer'
 import PullRequestModal from './components/PullRequestModal'
 import SafetyAuditLog from './components/SafetyAuditLog'
@@ -140,6 +141,9 @@ export default function App() {
 
         {/* Live Charts */}
         <LiveCharts timeseries={metrics?.timeseries} />
+
+        {/* Telemetry Ingestion Pipeline */}
+        <IngestionPanel />
 
         {/* Chaos Engineering Studio */}
         <ChaosControls

@@ -9,6 +9,23 @@ from typing import Dict, Any, List
 from rag_service.config import get_config, RAGConfig
 from rag_service.knowledge_base import DOCUMENTS, _compute_mock_embedding
 
+# --- Simulation constants -------------------------------------------------
+# Calibrated so the modelled service reproduces the documented incident
+# envelope for INC-2026-0042, and so the healthy baseline sits comfortably
+# below the anomaly detector's firing threshold rather than on top of it:
+#
+#                     p95 latency     cost/request     prompt tokens
+#   Healthy           ~2.1s           ~$0.03           ~2,710
+#   Incident          ~11.8s          ~$0.14           ~15,510
+#   Remediated        ~2.1s           ~$0.03           ~2,048 (bounded)
+#
+# Covered by tests/test_rag_pipeline.py::test_incident_envelope_matches_docs.
+ATTENTION_LINEAR_COEFF = 0.000098      # per-token decode cost
+ATTENTION_QUADRATIC_COEFF = 3.19e-8    # O(n^2) self-attention over the prompt
+PRICING_SCALE = 46.4                   # blended per-request premium
+PER_CHUNK_COST_USD = 0.00084           # retrieval I/O per context chunk
+
+
 class RAGEngine:
     def __init__(self):
         pass
@@ -61,24 +78,41 @@ class RAGEngine:
         # 4. Context assembly and token calculation
         chunk_count = len(final_context_docs)
         prompt_tokens = 150 + (chunk_count * cfg.chunk_size)
-        
-        if prompt_tokens > cfg.max_context_tokens:
-            prompt_tokens = min(prompt_tokens, cfg.max_context_tokens + 500)
-            
+
+        # The context bound is only actually enforced when the reranker is
+        # selecting a bounded candidate set. Without reranking, every retrieved
+        # chunk lands in the prompt unbounded — which is precisely the failure
+        # mode INC-2026-0042 models. Clamping unconditionally here would flatten
+        # the incident and the healthy baseline to the same token count and the
+        # blowout could never occur.
+        if cfg.reranker_enabled:
+            prompt_tokens = min(prompt_tokens, cfg.max_context_tokens)
+
         output_tokens = min(cfg.max_output_tokens, 200 + random.randint(20, 80))
         total_tokens = prompt_tokens + output_tokens
-        
-        # 5. Cost modeling
-        cost_usd = (prompt_tokens * 0.00000015) + (output_tokens * 0.00000060)
-        cost_usd = round(cost_usd * 100 + (chunk_count * 0.0035), 4)
 
-        # 6. Realistic Latency Modeling:
-        # Base latency ~1.2s. For top_k=30, context bloat spikes latency ~11.8s.
+        # 5. Cost modeling
+        # Token rates are per-token list prices; PRICING_SCALE expresses the
+        # blended per-request premium (vector search + eval passes), and the
+        # per-chunk term covers retrieval I/O that scales with context volume.
+        cost_usd = (prompt_tokens * 0.00000015) + (output_tokens * 0.00000060)
+        cost_usd = round((cost_usd * PRICING_SCALE) + (chunk_count * PER_CHUNK_COST_USD), 4)
+
+        # 6. Latency modeling
+        # Generation cost is quadratic in prompt length: self-attention is
+        # O(n^2) in sequence length, which is why context bloat degrades latency
+        # far faster than it grows the prompt. At the healthy baseline (~2.7k
+        # tokens) the quadratic term is minor; at incident volume (~15.5k
+        # tokens) it dominates and drives p95 past 11s.
         base_latency = 1.2
         retrieval_latency = 0.04 * cfg.top_k
         rerank_latency = 0.12 if rerank_applied else 0.0
-        generation_latency = 0.1 + (prompt_tokens * 0.00065)
-        
+        generation_latency = (
+            0.1
+            + (prompt_tokens * ATTENTION_LINEAR_COEFF)
+            + (prompt_tokens ** 2 * ATTENTION_QUADRATIC_COEFF)
+        )
+
         simulated_duration = base_latency + retrieval_latency + rerank_latency + generation_latency
         simulated_duration += random.uniform(-0.10, 0.15)
         simulated_duration = max(0.5, round(simulated_duration, 2))

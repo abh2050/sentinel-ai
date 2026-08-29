@@ -1,0 +1,51 @@
+{
+  "$comment": [
+    "Telemetry source catalog. Each entry is instantiated by",
+    "ingestion.connectors.registry.build_connector().",
+    "",
+    "Set 'endpoint' to poll a live backend, or 'fixture_path' to replay a",
+    "captured payload. The demo ships with fixtures so the pipeline runs",
+    "end-to-end with no vendor credentials and no network access.",
+    "",
+    "To point at real infrastructure, replace fixture_path with endpoint, e.g.",
+    "  \"endpoint\": \"http://prometheus.internal:9090/api/v1/query_range\",",
+    "  \"query_params\": {\"query\": \"rag_request_latency_p95_seconds\", \"step\": \"10s\"},",
+    "  \"headers\": {\"Authorization\": \"Bearer ${PROM_TOKEN}\"}"
+  ],
+  "sources": [
+    {
+      "kind": "otlp",
+      "name": "otel-collector",
+      "fixture_path": "data/sample_sources/otlp_spans.json",
+      "service_name": "rag-service",
+      "environment": "production",
+      "enabled": true
+    },
+    {
+      "kind": "prometheus",
+      "name": "prometheus-prod",
+      "fixture_path": "data/sample_sources/prometheus_range.json",
+      "service_name": "rag-service",
+      "environment": "prod",
+      "align_seconds": 10.0,
+      "enabled": true
+    },
+    {
+      "kind": "datadog",
+      "name": "datadog-apm",
+      "fixture_path": "data/sample_sources/datadog_series.json",
+      "service_name": "rag-service",
+      "environment": "production",
+      "align_seconds": 10.0,
+      "enabled": true
+    },
+    {
+      "kind": "jsonl",
+      "name": "app-request-log",
+      "fixture_path": "data/sample_sources/rag_events.jsonl",
+      "service_name": "rag-service",
+      "environment": "production",
+      "enabled": true
+    }
+  ]
+}
