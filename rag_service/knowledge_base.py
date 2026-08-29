@@ -2,10 +2,12 @@
 Enterprise Knowledge Base & Vector Store Simulator
 Provides indexed documents on Cloud Infrastructure, SRE incident management, and AI reliability.
 """
+import os
+import json
 import numpy as np
 from typing import List, Dict, Any
 
-DOCUMENTS = [
+DEFAULT_DOCUMENTS = [
     {
         "id": "doc-001",
         "title": "Distributed Consensus & Raft Protocol",
@@ -64,19 +66,33 @@ DOCUMENTS = [
     }
 ]
 
-# Generate synthetic 64-dimensional semantic embeddings for deterministic matching
 def _compute_mock_embedding(text: str, keywords: List[str]) -> np.ndarray:
     np.random.seed(abs(hash(text[:30])) % (2**31))
     vec = np.random.randn(64)
-    # inject keyword weights
     for kw in keywords:
         kw_hash = abs(hash(kw)) % 64
         vec[kw_hash] += 2.5
     norm = np.linalg.norm(vec)
     return vec / (norm + 1e-8)
 
-for doc in DOCUMENTS:
-    doc["embedding"] = _compute_mock_embedding(doc["content"], doc["keywords"])
+def load_documents() -> List[Dict[str, Any]]:
+    data_path = os.path.join(os.path.dirname(__file__), "..", "data", "knowledge_corpus.json")
+    if os.path.exists(data_path):
+        try:
+            with open(data_path, "r", encoding="utf-8") as f:
+                docs = json.load(f)
+                for doc in docs:
+                    doc["embedding"] = _compute_mock_embedding(doc["content"], doc.get("keywords", []))
+                return docs
+        except Exception:
+            pass
+    
+    # Fallback
+    for doc in DEFAULT_DOCUMENTS:
+        doc["embedding"] = _compute_mock_embedding(doc["content"], doc.get("keywords", []))
+    return DEFAULT_DOCUMENTS
+
+DOCUMENTS = load_documents()
 
 def get_all_documents() -> List[Dict[str, Any]]:
     return DOCUMENTS

@@ -1,0 +1,26 @@
+[
+  {
+    "incident_id": "INC-2026-0038",
+    "title": "Vector Embedding Dimension Mismatch",
+    "severity": "HIGH",
+    "status": "RESOLVED",
+    "detected_at": "2026-08-27T14:22:00Z",
+    "resolved_at": "2026-08-27T14:38:00Z",
+    "pr_number": 138,
+    "pr_url": "https://github.com/enterprise/ai-platform/pull/138",
+    "summary": "Embedding model checkpoint upgraded from 768-dim to 1536-dim without reindexing, causing 0-similarity fallbacks. Automated PR restored compatible embedding client.",
+    "resolution_time_minutes": 16
+  },
+  {
+    "incident_id": "INC-2026-0040",
+    "title": "Cross-Encoder Reranker CPU Throttling",
+    "severity": "MEDIUM",
+    "status": "RESOLVED",
+    "detected_at": "2026-08-28T09:15:00Z",
+    "resolved_at": "2026-08-28T09:28:00Z",
+    "pr_number": 140,
+    "pr_url": "https://github.com/enterprise/ai-platform/pull/140",
+    "summary": "Reranker batch size was set to 64 on 2-CPU worker pods. Automated PR tuned batch size to 16 with thread pool bounding.",
+    "resolution_time_minutes": 13
+  }
+]

@@ -1,0 +1,107 @@
+[
+  {
+    "id": "eval-001",
+    "query": "How does the Raft consensus algorithm handle leader partitions?",
+    "expected_topics": [
+      "raft",
+      "leader election",
+      "split-vote",
+      "quorum"
+    ],
+    "target_doc_id": "doc-001",
+    "min_groundedness": 90.0,
+    "max_latency_seconds": 3.0
+  },
+  {
+    "id": "eval-002",
+    "query": "What are the performance impacts of setting top_k=30 in vector search without reranking?",
+    "expected_topics": [
+      "top_k",
+      "prompt bloat",
+      "quadratic attention",
+      "latency",
+      "cost"
+    ],
+    "target_doc_id": "doc-002",
+    "min_groundedness": 90.0,
+    "max_latency_seconds": 3.0
+  },
+  {
+    "id": "eval-003",
+    "query": "Explain the RAG Triad evaluation metrics.",
+    "expected_topics": [
+      "context relevance",
+      "groundedness",
+      "answer relevance",
+      "triad"
+    ],
+    "target_doc_id": "doc-003",
+    "min_groundedness": 92.0,
+    "max_latency_seconds": 3.0
+  },
+  {
+    "id": "eval-004",
+    "query": "Why is human authorization mandatory before merging automated remediation PRs?",
+    "expected_topics": [
+      "human-in-the-loop",
+      "governance",
+      "operational risk",
+      "safety"
+    ],
+    "target_doc_id": "doc-004",
+    "min_groundedness": 92.0,
+    "max_latency_seconds": 3.0
+  },
+  {
+    "id": "eval-005",
+    "query": "How does reducing retrieved chunk count optimize LLM prompt token costs?",
+    "expected_topics": [
+      "tokens",
+      "cost",
+      "ttft",
+      "prompt optimization"
+    ],
+    "target_doc_id": "doc-005",
+    "min_groundedness": 90.0,
+    "max_latency_seconds": 3.0
+  },
+  {
+    "id": "eval-006",
+    "query": "What are the advantages of a two-stage retrieval pipeline with a cross-encoder reranker?",
+    "expected_topics": [
+      "bi-encoder",
+      "cross-encoder",
+      "precision",
+      "reranking"
+    ],
+    "target_doc_id": "doc-007",
+    "min_groundedness": 92.0,
+    "max_latency_seconds": 3.0
+  },
+  {
+    "id": "eval-007",
+    "query": "How can cache stampedes on Redis be mitigated?",
+    "expected_topics": [
+      "cache stampede",
+      "xfetch",
+      "redlock",
+      "probabilistic early expiration"
+    ],
+    "target_doc_id": "doc-009",
+    "min_groundedness": 90.0,
+    "max_latency_seconds": 3.0
+  },
+  {
+    "id": "eval-008",
+    "query": "How do circuit breakers prevent recursive tool retry storms in agentic systems?",
+    "expected_topics": [
+      "circuit breaker",
+      "retry storm",
+      "exponential backoff",
+      "agent"
+    ],
+    "target_doc_id": "doc-010",
+    "min_groundedness": 90.0,
+    "max_latency_seconds": 3.0
+  }
+]

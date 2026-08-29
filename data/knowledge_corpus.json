@@ -1,0 +1,185 @@
+[
+  {
+    "id": "doc-001",
+    "title": "Distributed Consensus & Raft Protocol",
+    "content": "The Raft consensus algorithm guarantees state machine replication across a distributed cluster by electing a distinguished leader, maintaining replicated logs, and ensuring safety through majority quorum commits. In the event of network partitions, split-vote scenarios are mitigated via randomized election timeouts.",
+    "category": "distributed_systems",
+    "keywords": [
+      "raft",
+      "consensus",
+      "distributed",
+      "quorum",
+      "leader election",
+      "replication",
+      "partition"
+    ]
+  },
+  {
+    "id": "doc-002",
+    "title": "Vector Database Indexing & HNSW Top-K Tuning",
+    "content": "Hierarchical Navigable Small World (HNSW) graphs offer logarithmic search complexity. Increasing top_k retrieval past 10 without semantic reranking creates severe prompt bloat, increases quadratic attention cost in LLMs, and degrades answer groundedness due to context dilution.",
+    "category": "ai_infrastructure",
+    "keywords": [
+      "vector",
+      "hnsw",
+      "top_k",
+      "retrieval",
+      "reranking",
+      "index",
+      "latency",
+      "bloat"
+    ]
+  },
+  {
+    "id": "doc-003",
+    "title": "Production RAG Reliability & Triad Evaluations",
+    "content": "Evaluating RAG systems requires measuring the RAG Triad: Context Relevance (precision of retrieved chunks), Groundedness / Faithfulness (absence of hallucinations in LLM output), and Answer Relevance (directness of response to query). High top_k degrades groundedness by introducing noisy distractor chunks.",
+    "category": "ai_evaluation",
+    "keywords": [
+      "rag",
+      "triad",
+      "groundedness",
+      "hallucination",
+      "context relevance",
+      "eval",
+      "precision"
+    ]
+  },
+  {
+    "id": "doc-004",
+    "title": "SRE Incident Management & Automated Remediation",
+    "content": "Automated incident remediation workflows must maintain strict human-in-the-loop governance. While AI agents can triage, diagnose, and create pull requests, automated merges to production without human authorization introduce catastrophic operational risk and violate enterprise compliance.",
+    "category": "sre",
+    "keywords": [
+      "incident",
+      "sre",
+      "remediation",
+      "pr",
+      "human-in-the-loop",
+      "governance",
+      "safety",
+      "compliance"
+    ]
+  },
+  {
+    "id": "doc-005",
+    "title": "LLM Token Economics & Cost Optimization",
+    "content": "Prompt tokens dominate RAG cost profiles. Reducing retrieved chunk volume from 30 chunks (15,000 tokens) to 5 chunks (2,500 tokens) decreases per-query cost by over 75% while simultaneously reducing time-to-first-token (TTFT) and p95 latency by up to 80%.",
+    "category": "cost_engineering",
+    "keywords": [
+      "cost",
+      "tokens",
+      "pricing",
+      "latency",
+      "ttft",
+      "prompt",
+      "optimization",
+      "economics"
+    ]
+  },
+  {
+    "id": "doc-006",
+    "title": "Kubernetes Pod Autoscaling & Throttling Limits",
+    "content": "CPU throttling occurs when CFS quotas are misconfigured on container workloads. Horizontal Pod Autoscalers (HPA) should scale on custom metrics including request queue depth and p95 latency rather than raw CPU utilization alone.",
+    "category": "kubernetes",
+    "keywords": [
+      "kubernetes",
+      "k8s",
+      "hpa",
+      "scaling",
+      "throttling",
+      "cfs",
+      "cpu",
+      "autoscaler"
+    ]
+  },
+  {
+    "id": "doc-007",
+    "title": "Semantic Reranking Architecture (Flash-Reranker)",
+    "content": "Two-stage retrieval pipelines retrieve top-20 candidates using dense bi-encoders, followed by a fast cross-encoder reranker that scores relevance and passes the top-5 most relevant chunks to the generator. This maximizes precision while strictly bounding context window size.",
+    "category": "ai_infrastructure",
+    "keywords": [
+      "reranking",
+      "reranker",
+      "cross-encoder",
+      "bi-encoder",
+      "precision",
+      "top_n",
+      "flash"
+    ]
+  },
+  {
+    "id": "doc-008",
+    "title": "OpenTelemetry Distributed Tracing in AI Pipelines",
+    "content": "OpenTelemetry spans capture the lifecycle of AI requests across retrieval latency, vector DB query time, token generation spans, and evaluation guardrails. Spans enable precise anomaly attribution during incidents.",
+    "category": "observability",
+    "keywords": [
+      "opentelemetry",
+      "tracing",
+      "spans",
+      "telemetry",
+      "metrics",
+      "observability",
+      "attribution"
+    ]
+  },
+  {
+    "id": "doc-009",
+    "title": "Redis Cache Invalidation & Stampede Mitigation",
+    "content": "Cache stampedes (thundering herd) occur when high-traffic cache keys expire simultaneously. Mitigations include probabilistic early expiration (XFetch algorithm), mutual exclusion locks via Redlock, and background asynchronous cache warming.",
+    "category": "caching",
+    "keywords": [
+      "redis",
+      "cache",
+      "stampede",
+      "thundering herd",
+      "invalidation",
+      "xfetch",
+      "redlock"
+    ]
+  },
+  {
+    "id": "doc-010",
+    "title": "Agentic Tool Calling & Error Recovery Loops",
+    "content": "Autonomous agent tool loops can fall into recursive retry storms when upstream tool APIs return transient errors. Bounded exponential backoff with jitter and circuit breaker trip thresholds prevent cascading system degradation.",
+    "category": "agentic_ai",
+    "keywords": [
+      "agent",
+      "tool",
+      "loop",
+      "retry",
+      "circuit breaker",
+      "backoff",
+      "resilience"
+    ]
+  },
+  {
+    "id": "doc-011",
+    "title": "Database Read Replicas & Replication Lag",
+    "content": "Asynchronous replication across PostgreSQL read replicas introduces eventual consistency windows. Read-your-own-writes consistency can be achieved by pinning read requests to primary nodes for a session duration following mutation operations.",
+    "category": "databases",
+    "keywords": [
+      "database",
+      "postgres",
+      "replica",
+      "lag",
+      "replication",
+      "consistency",
+      "primary"
+    ]
+  },
+  {
+    "id": "doc-012",
+    "title": "Prompt Injection Mitigation & Guardrail Firewalls",
+    "content": "LLM security firewalls inspect incoming prompts and retrieved context chunks for indirect prompt injection vectors. Sanitization filters and structural token boundary demarcations prevent context hijacking.",
+    "category": "ai_security",
+    "keywords": [
+      "security",
+      "injection",
+      "firewall",
+      "guardrail",
+      "prompt",
+      "sanitization"
+    ]
+  }
+]
