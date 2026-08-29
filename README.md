@@ -124,6 +124,103 @@ Six components turn "a metric moved" into "a reviewed pull request":
                       (Interactive Diff, PR Review & Merge)
 ```
 
+### Agentic Architecture and Orchestration Topology
+
+The system uses three different topologies, each chosen by what the data actually requires rather than by preference.
+
+```mermaid
+flowchart TB
+    subgraph SRC["1 - TELEMETRY SOURCES"]
+        direction LR
+        A1["OpenTelemetry<br/>OTLP spans"]
+        A2["Prometheus<br/>range query"]
+        A3["Datadog<br/>timeseries"]
+        A4["Application<br/>JSONL logs"]
+    end
+
+    subgraph ING["2 - INGESTION: FAN-IN"]
+        NORM["Normalize<br/>canonical schema"]
+        ENR["Enrich<br/>derive missing fields"]
+        GATE{"Quality gates"}
+        DLQ[("Dead-letter<br/>quarantine")]
+        MERGE["Merge and sort<br/>by event time"]
+    end
+
+    A1 --> NORM
+    A2 --> NORM
+    A3 --> NORM
+    A4 --> NORM
+    NORM --> ENR
+    ENR --> GATE
+    GATE -->|rejected| DLQ
+    GATE -->|accepted| MERGE
+
+    subgraph SNK["3 - LOAD: FAN-OUT"]
+        direction LR
+        S1["MetricsCollector<br/>live rolling window"]
+        S2["JSONL landing zone<br/>replay and audit"]
+    end
+
+    MERGE --> S1
+    MERGE --> S2
+
+    S1 --> DET{"Anomaly detector<br/>multi-metric correlation"}
+    DET -->|within SLO| NOOP["No action"]
+    DET -->|correlated anomaly| ORCH["Orchestrator"]
+
+    subgraph AG["4 - AGENT PIPELINE: SEQUENTIAL CHAIN"]
+        direction LR
+        AG1["Detection<br/>triage, severity"]
+        AG2["Diagnosis<br/>RCA, evidence"]
+        AG3["Remediation<br/>synthesize patch"]
+        AG4["Validation<br/>pytest, golden evals"]
+        AG5["GitHub<br/>branch, commit, PR"]
+        AG1 --> AG2
+        AG2 --> AG3
+        AG3 --> AG4
+        AG4 --> AG5
+    end
+
+    ORCH --> AG1
+
+    SAFE{{"SAFETY COVENANT<br/>cross-cutting policy gate"}}
+    AG1 -.->|check| SAFE
+    AG2 -.->|check| SAFE
+    AG3 -.->|check| SAFE
+    AG4 -.->|check| SAFE
+    AG5 -.->|check| SAFE
+
+    AG5 --> PR["Pull request opened"]
+    SAFE -.->|"AUTO_MERGE denied"| PR
+
+    PR --> HUM{"5 - HUMAN REVIEW<br/>exclusive branch"}
+    HUM -->|approve| APPLY["Apply fix<br/>audit signature recorded"]
+    HUM -->|reject| REOPEN["Incident reopened<br/>returns to agents"]
+    APPLY --> S1
+    REOPEN -.-> AG2
+```
+
+**1. Ingestion is fan-in.** Four heterogeneous sources converge into one canonical stream. This is forced by the detection requirement: the anomaly detector fires on *correlated* movement across latency, cost, retrieval volume, and groundedness simultaneously. Metrics living in four separate vendor stores in four different unit systems cannot be correlated at all, so convergence has to happen before detection, not after.
+
+**2. Load is fan-out.** One validated batch is written to every sink. The two sinks exist because the data has two different lifetimes: `MetricsCollector` holds a short rolling window for live detection, while the JSONL landing zone is durable storage for replay, backfill, and audit. A sink failure is recorded and does not block the others.
+
+**3. The agent pipeline is a sequential chain — deliberately, not for lack of ambition.** Every stage has a hard data dependency on its predecessor's output:
+
+| Stage | Cannot start until | Because it consumes |
+| :--- | :--- | :--- |
+| Diagnosis | Detection completes | the triaged incident and severity |
+| Remediation | Diagnosis completes | the identified root cause |
+| Validation | Remediation completes | the patch to test |
+| GitHub | Validation completes | the scorecard that goes in the PR body |
+
+There is no stage that could run without the one before it, so fan-out here would be theatre. **Nothing in this codebase runs concurrently** — the connector loop and the sink loop are ordinary `for` loops, so even where the *data topology* is fan-in or fan-out, *execution* is sequential iteration.
+
+**4. The safety covenant is cross-cutting, not a pipeline stage.** Every agent calls `check_permission` before acting (dotted lines). This is the important structural decision: a policy implemented as a pipeline *step* can be bypassed by reordering or skipping that step, whereas a gate every agent must pass through independently cannot. The GitHub agent's `AUTO_MERGE_PULL_REQUEST` request is refused here, which is what stops the loop short of production.
+
+**5. Human review is an exclusive branch** with two terminal paths. Approval applies the fix and records an audit signature; rejection returns the incident to the agents rather than discarding the investigation.
+
+*Where concurrency would genuinely help later:* polling the four sources is I/O-bound and independent, so it is the obvious first candidate for `asyncio.gather`. Diagnosis is the other — evaluating several competing root-cause hypotheses in parallel and ranking them by confidence would be a real fan-out, and is the natural upgrade path from the current single-hypothesis implementation.
+
 ### Incident Lifecycle Sequence
 
 End to end, from a vendor payload arriving to a human merging the fix. The critical beat is in Phase 3: the GitHub Agent asks for merge permission and the Safety Covenant **refuses it** — the only path to production runs through a human.

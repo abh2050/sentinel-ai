@@ -58,7 +58,10 @@ SentinelAI is an enterprise-grade autonomous reliability platform designed to op
                       └─────────────────────────────┘
 ```
 
-> For the runtime interaction view — who calls whom, in what order, and where the safety gate refuses the AI — see the [Incident Lifecycle Sequence](README.md#incident-lifecycle-sequence) diagram in the README.
+> Two further views live in the README:
+>
+> - [Agentic Architecture and Orchestration Topology](README.md#agentic-architecture-and-orchestration-topology) — the structural view: where the system fans in, where it fans out, why the agent pipeline is a sequential chain, and why the safety covenant is cross-cutting rather than a pipeline stage.
+> - [Incident Lifecycle Sequence](README.md#incident-lifecycle-sequence) — the temporal view: who calls whom, in what order, and where the safety gate refuses the AI.
 
 ---
 
