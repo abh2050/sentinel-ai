@@ -58,6 +58,8 @@ SentinelAI is an enterprise-grade autonomous reliability platform designed to op
                       └─────────────────────────────┘
 ```
 
+> For the runtime interaction view — who calls whom, in what order, and where the safety gate refuses the AI — see the [Incident Lifecycle Sequence](README.md#incident-lifecycle-sequence) diagram in the README.
+
 ---
 
 ## 2. Component Breakdown

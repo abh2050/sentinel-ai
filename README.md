@@ -97,6 +97,74 @@ Operating autonomous agentic workflows and RAG systems in production presents un
                       (Interactive Diff, PR Review & Merge)
 ```
 
+### Incident Lifecycle Sequence
+
+End to end, from a vendor payload arriving to a human merging the fix. The critical beat is in Phase 3: the GitHub Agent asks for merge permission and the Safety Covenant **refuses it** — the only path to production runs through a human.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant SRC as Telemetry Sources
+    participant ING as Ingestion Pipeline
+    participant GATE as Quality Gates
+    participant OBS as Observability Engine
+    participant ORCH as Sentinel Orchestrator
+    participant AGENT as Agent Pipeline
+    participant SAFE as Safety Covenant
+    participant GH as GitHub Agent
+    participant SRE as Human SRE
+
+    Note over SRC,OBS: Phase 1: vendor-agnostic telemetry ingestion
+
+    loop every poll interval
+        ING->>SRC: fetch payloads
+        SRC-->>ING: raw records, conflicting units
+        ING->>ING: normalize to canonical schema
+        ING->>GATE: validate each record
+        GATE-->>ING: reject duplicate, stale, out-of-range
+        Note right of GATE: quarantined in dead-letter<br/>with a named reason
+        GATE-->>ING: accept remainder
+        ING->>OBS: load in event-time order
+    end
+
+    Note over OBS,ORCH: Phase 2: detection
+
+    OBS->>OBS: compare rolling p95 against baseline
+    alt within SLO
+        OBS-->>ING: no action
+    else anomaly correlated across metrics
+        OBS->>ORCH: incident payload INC-2026-0042
+    end
+
+    Note over ORCH,GH: Phase 3: autonomous investigation
+
+    ORCH->>AGENT: run detect, diagnose, remediate, validate
+    AGENT->>SAFE: request permission per action
+    SAFE-->>AGENT: permitted, written to audit trail
+    AGENT->>AGENT: isolate root cause, synthesize patch
+    AGENT->>AGENT: run pytest and golden evals in sandbox
+    AGENT-->>ORCH: validated fix, 11.8s down to 2.2s
+
+    ORCH->>GH: open pull request
+    GH->>SAFE: request AUTO_MERGE_PULL_REQUEST
+    SAFE--xGH: BLOCKED by safety covenant
+    GH->>SRE: PR awaiting human review
+
+    Note over SAFE,SRE: Phase 4: human-in-the-loop gate
+
+    SRE->>SRE: review scorecard and diff
+    alt approved
+        SRE->>ORCH: approve and merge
+        ORCH->>SAFE: authorize as HUMAN_OPERATOR
+        SAFE-->>ORCH: granted, signature recorded
+        ORCH->>OBS: apply fix to production config
+        OBS-->>SRE: metrics recovered to baseline
+    else rejected
+        SRE->>ORCH: reject patch with reason
+        ORCH-->>AGENT: incident reopened
+    end
+```
+
 ---
 
 ## 🔌 Telemetry Ingestion Pipeline
