@@ -1,10 +1,11 @@
 # SentinelAI: Autonomous AI Reliability & Incident Response Platform
 ### *Continuous Telemetry • Autonomous Root-Cause Analysis • Sandboxed Remediation • Human-in-the-Loop PR Governance*
 
-[![Tests](https://img.shields.io/badge/Pytest-Passing-emerald)](tests/)
+[![Tests](https://github.com/abh2050/sentinel-ai/actions/workflows/tests.yml/badge.svg)](https://github.com/abh2050/sentinel-ai/actions/workflows/tests.yml)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-blue)](api/server.py)
 [![React](https://img.shields.io/badge/React-18-cyan)](dashboard/)
 [![Safety](https://img.shields.io/badge/AI_Safety-Human--in--the--Loop-amber)](sentinel_core/safety_policy.py)
+[![Claude](https://img.shields.io/badge/RCA-Claude_Opus_5-8A63D2)](sentinel_core/integrations/llm_client.py)
 
 **SentinelAI** is an autonomous reliability platform for production AI systems — RAG pipelines and agentic workflows. It watches latency, cost, retrieval volume, and answer quality; when something regresses, it diagnoses the cause, writes and benchmarks a fix, and opens a pull request for a human to approve.
 
@@ -72,8 +73,8 @@ Six components turn "a metric moved" into "a reviewed pull request":
 1. **Vendor-Agnostic Telemetry Ingestion** — Connects to OpenTelemetry collectors, Prometheus, Datadog, and raw application logs; reconciles their conflicting units and schemas into one canonical record, and quarantines malformed data before it can corrupt the baseline. *Solves gap #1: getting every metric onto one timeline.*
 2. **Continuous Observability** — p50/p95/p99 latency, per-request token cost, context chunk volume, agent tool spans, and RAG Triad scores (Groundedness, Context Relevance, Answer Quality) tracked on a rolling window.
 3. **Multi-Metric Anomaly Detection** — Correlates simultaneous movement across latency, cost, retrieval volume, and quality against a healthy baseline, rather than alerting on any one of them in isolation.
-4. **Autonomous Multi-Agent Investigation** — Specialist agents for detection and triage, root-cause analysis, remediation synthesis, and sandbox validation. *Solves gap #3: the slow part.*
-5. **Sandbox Benchmarking** — Runs `pytest` and a golden evaluation set against the proposed patch, comparing before/after on the exact metrics that triggered the incident. A fix that regresses answer quality fails here, not in production.
+4. **Model-Backed Root Cause Analysis** — The Diagnosis Agent is Claude with read-only investigation tools. It decides what to look at — metrics against baseline, the live retrieval config, the change history, the operational runbooks — then submits a structured verdict with confidence and evidence. The tools it holds cannot mutate anything, so the blast radius of a model mistake is a wrong explanation, never a wrong change. *Solves gap #3: the slow part.*
+5. **Sandbox Benchmarking** — Copies the repo, applies the patch, and runs the **real** `pytest` suite against it, then measures actual before/after on the metrics that triggered the incident. A failing suite or a regressed metric blocks the pull request outright.
 6. **Human-Gated Pull Requests** — Generates the branch, commit, and a Markdown PR body carrying the RCA, the diff, and the validation scorecard — then stops and waits for a person. *Solves gap #2: a config change that bypassed review comes back through it.*
 
 ---
@@ -420,7 +421,9 @@ The Lead SRE reviews the diff in the mission control console, clicks **"Approve 
 
 > **Note on scope**: out of the box this runs as a self-contained demo — the RAG service, its traffic, and the chaos injection are all simulated in-process, and pull requests are simulated unless GitHub is configured.
 >
-> The telemetry ingestion pipeline, safety policy enforcement, and pull request creation are production-ready and switch to real backends through configuration alone. The diagnosis, remediation, and validation agents contain hardcoded logic for the shipped incident and need real implementations before they are useful against your own systems. [DEPLOYMENT.md](DEPLOYMENT.md) states exactly which is which and how to replace the demo pieces.
+> Real: the telemetry ingestion pipeline, the safety policy enforcement, pull request creation, sandbox validation (which runs the actual test suite), and model-backed root cause analysis. Each switches to real backends through configuration alone.
+>
+> Still demonstration scaffolding: the remediation agent patches one known parameter set, and the monitored RAG service is a simulator. [DEPLOYMENT.md](DEPLOYMENT.md) states exactly which is which.
 
 ---
 

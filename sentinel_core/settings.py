@@ -76,6 +76,26 @@ class GitHubSettings(BaseModel):
         return problems
 
 
+class LLMSettings(BaseModel):
+    """
+    Configuration for model-backed root-cause analysis.
+
+    Enabled by default: an API key present in the environment is taken as
+    intent to use it. Set SENTINEL_LLM_ENABLED=false to force the
+    deterministic path (useful in CI, or to run the demo without spend).
+    """
+
+    enabled: bool = True
+    api_key: Optional[str] = None
+    model: str = "claude-opus-5"
+    effort: str = "high"
+    max_tokens: int = 8000
+
+    @property
+    def is_configured(self) -> bool:
+        return bool(self.enabled and self.api_key)
+
+
 class Settings(BaseModel):
     """Process-wide deployment configuration."""
 
@@ -99,6 +119,7 @@ class Settings(BaseModel):
     ingestion_poll_seconds: int = 0
 
     github: GitHubSettings = Field(default_factory=GitHubSettings)
+    llm: LLMSettings = Field(default_factory=LLMSettings)
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -125,6 +146,19 @@ class Settings(BaseModel):
             ),
             ingestion_poll_seconds=_env_int(
                 "SENTINEL_INGESTION_POLL_SECONDS", 30 if is_prod else 0
+            ),
+            llm=LLMSettings(
+                enabled=_env_bool("SENTINEL_LLM_ENABLED", True),
+                # Accept the SDK's standard variable so an already-configured
+                # environment works without a Sentinel-specific rename.
+                api_key=(
+                    os.getenv("SENTINEL_ANTHROPIC_API_KEY")
+                    or os.getenv("ANTHROPIC_API_KEY")
+                    or None
+                ),
+                model=os.getenv("SENTINEL_LLM_MODEL", "claude-opus-5"),
+                effort=os.getenv("SENTINEL_LLM_EFFORT", "high"),
+                max_tokens=_env_int("SENTINEL_LLM_MAX_TOKENS", 8000),
             ),
             github=GitHubSettings(
                 enabled=_env_bool("SENTINEL_GITHUB_ENABLED", is_prod),
@@ -173,6 +207,11 @@ class Settings(BaseModel):
             if not self.github.enabled:
                 warnings.append(
                     "GitHub integration is disabled: pull requests will be simulated, not opened."
+                )
+            if not self.llm.is_configured:
+                warnings.append(
+                    "No Anthropic API key configured: root-cause analysis will fall back to "
+                    "the deterministic rule set instead of model-backed investigation."
                 )
 
         warnings.extend(self.github.validation_errors())

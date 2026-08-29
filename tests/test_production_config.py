@@ -316,23 +316,35 @@ def test_github_failure_preserves_the_investigation():
     assert any(log["event"] == "PULL_REQUEST_FAILED" for log in result.agent_logs)
 
 
+PRE_FIX_CONFIG = '''"""Config module."""
+from pydantic import BaseModel, Field
+
+
+class RAGConfig(BaseModel):
+    top_k: int = Field(default=5, description="chunks retrieved", ge=1, le=50)
+    reranker_enabled: bool = Field(default=False, description="reranking stage")
+    reranker_top_n: int = Field(default=5, description="retained after rerank")
+
+
+def reset_to_healthy_baseline() -> RAGConfig:
+    return RAGConfig(
+        top_k=5,
+        reranker_enabled=False,
+        reranker_top_n=5,
+    )
+'''
+
+
 def test_remediation_emits_committable_file_content():
     """
     The PR needs real file content, not just a display diff.
 
-    Content is read from the live config file and patched, so unrelated edits
-    since this agent was written are preserved rather than reverted.
+    Driven from known input rather than the live file, so the assertion holds
+    regardless of what the config currently says on disk.
     """
-    from sentinel_core.agents.detection_agent import detection_agent
-    from sentinel_core.agents.diagnosis_agent import diagnosis_agent
     from sentinel_core.agents.remediation_agent import remediation_agent
 
-    incident = detection_agent.run({
-        "incident_id": "INC-TEST-2", "title": "t", "severity": "HIGH", "anomalies": [],
-    })
-    incident = remediation_agent.run(diagnosis_agent.run(incident))
-
-    changes = incident.remediation.file_changes
+    changes = remediation_agent._build_file_changes(PRE_FIX_CONFIG)
     assert "rag_service/config.py" in changes
 
     content = changes["rag_service/config.py"]
@@ -341,6 +353,44 @@ def test_remediation_emits_committable_file_content():
     # Must be the whole module, not a fragment.
     assert "class RAGConfig" in content
     assert "def reset_to_healthy_baseline" in content
+
+
+def test_remediation_also_patches_the_reset_baseline():
+    """
+    Patching the field declarations alone is not a fix.
+
+    `reset_to_healthy_baseline()` builds RAGConfig from its own literals and
+    `clear_chaos()` calls it, so a patch that skips it would be silently
+    reverted the next time anything reset the service.
+    """
+    from sentinel_core.agents.remediation_agent import remediation_agent
+
+    content = remediation_agent._build_file_changes(PRE_FIX_CONFIG)["rag_service/config.py"]
+    reset_body = content.split("def reset_to_healthy_baseline")[1]
+
+    assert "top_k=8," in reset_body, "reset baseline still returns the pre-fix top_k"
+    assert "reranker_enabled=True," in reset_body, "reset baseline still disables the reranker"
+
+
+def test_remediation_is_idempotent_on_already_fixed_content():
+    """
+    Re-running against already-patched content must produce no change set.
+
+    An empty set makes the GitHub client refuse the PR, which is correct:
+    opening one that changes nothing while claiming to fix an incident is
+    worse than opening none.
+    """
+    from sentinel_core.agents.remediation_agent import remediation_agent
+
+    once = remediation_agent._build_file_changes(PRE_FIX_CONFIG)["rag_service/config.py"]
+    assert remediation_agent._build_file_changes(once) == {}
+
+
+def test_remediation_refuses_unrecognized_config_shape():
+    """An unexpected file must yield no patch rather than a partial one."""
+    from sentinel_core.agents.remediation_agent import remediation_agent
+
+    assert remediation_agent._build_file_changes("totally unrelated content") == {}
 
 
 # --------------------------------------------------------------------------

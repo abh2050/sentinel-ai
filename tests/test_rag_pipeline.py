@@ -141,5 +141,12 @@ def test_clearing_chaos_restores_the_healthy_config():
 
     clear_chaos()
     assert get_active_chaos() is None
-    assert get_config().top_k == 5, "reset left the injected fault active"
-    assert get_config().similarity_threshold == 0.68
+
+    # Assert against the declared defaults rather than literals. The contract
+    # under test is "reset restores the healthy baseline", and the baseline is
+    # whatever RAGConfig declares -- a remediation that legitimately changes
+    # those defaults should not fail this test.
+    declared = RAGConfig()
+    assert get_config().top_k == declared.top_k, "reset left the injected fault active"
+    assert get_config().reranker_enabled == declared.reranker_enabled
+    assert get_config().similarity_threshold == declared.similarity_threshold

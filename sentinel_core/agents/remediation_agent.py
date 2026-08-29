@@ -5,7 +5,7 @@ Synthesizes surgical code and configuration patches, git branch names, commit me
 import re
 import time
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from sentinel_core.models import IncidentRecord, RemediationProposal, IncidentStatus
 from sentinel_core.safety_policy import safety_enforcer
 
@@ -59,43 +59,54 @@ class RemediationAgent:
         })
         return incident
 
-    def _build_file_changes(self) -> Dict[str, str]:
+    # Every place the healthy retrieval defaults are expressed. Patching only
+    # the Field declarations is not enough: `reset_to_healthy_baseline()`
+    # constructs RAGConfig with its own literals, and `clear_chaos()` calls it.
+    # A fix applied to the declarations alone would be silently reverted the
+    # next time anything reset the service.
+    CONFIG_SUBSTITUTIONS = [
+        # Pydantic field declarations
+        (r"(top_k:\s*int\s*=\s*Field\(default=)\d+", r"\g<1>8"),
+        (r"(reranker_enabled:\s*bool\s*=\s*Field\(default=)(True|False)", r"\g<1>True"),
+        # Literals inside reset_to_healthy_baseline()
+        (r"(\n\s+top_k=)\d+(,)", r"\g<1>8\g<2>"),
+        (r"(\n\s+reranker_enabled=)(True|False)(,)", r"\g<1>True\g<3>"),
+    ]
+
+    def _build_file_changes(self, source_content: Optional[str] = None) -> Dict[str, str]:
         """
         Produce the actual post-fix file content to commit.
 
-        Read the current file from disk and apply the parameter changes to it,
-        rather than shipping a hardcoded copy: a stored snapshot would silently
-        revert every unrelated edit made to the config since this agent was
-        written. If the file cannot be read, return nothing — an empty change
-        set makes the GitHub client refuse to open an empty PR, which is the
-        correct outcome, rather than committing a stale file.
+        Reads the current file and applies the parameter changes to it, rather
+        than shipping a hardcoded copy: a stored snapshot would silently revert
+        every unrelated edit made to the config since this agent was written.
+
+        Returns an empty change set when the file cannot be read, when it no
+        longer matches what this remediation expects, or when the fix is
+        already applied. Empty makes the GitHub client refuse to open the PR,
+        which is the right outcome in all three cases -- better no pull request
+        than one that changes nothing while claiming to fix an incident.
+
+        `source_content` is for testing the transform against known input
+        without depending on the state of the file on disk.
         """
-        source_path = Path(__file__).resolve().parents[2] / "rag_service" / "config.py"
-        try:
-            content = source_path.read_text(encoding="utf-8")
-        except OSError:
-            return {}
+        if source_content is None:
+            source_path = Path(__file__).resolve().parents[2] / "rag_service" / "config.py"
+            try:
+                source_content = source_path.read_text(encoding="utf-8")
+            except OSError:
+                return {}
 
         # Match whatever value is currently declared rather than the incident's
         # runtime value. The injected fault (top_k=30) is an in-memory mutation
-        # that never reaches the file, so matching on it would silently patch
-        # nothing and commit an unchanged file.
-        substitutions = [
-            (r"(top_k:\s*int\s*=\s*Field\(default=)\d+", r"\g<1>8"),
-            (r"(reranker_enabled:\s*bool\s*=\s*Field\(default=)(True|False)", r"\g<1>True"),
-        ]
-
-        patched = content
-        for pattern, replacement in substitutions:
+        # that never reaches the file, so matching on it would patch nothing.
+        patched = source_content
+        for pattern, replacement in self.CONFIG_SUBSTITUTIONS:
             patched, count = re.subn(pattern, replacement, patched, count=1)
             if count == 0:
-                # The file no longer looks the way this remediation expects.
-                # Returning nothing makes the GitHub client refuse to open the
-                # PR, which is correct: better no PR than one that silently
-                # changes nothing while claiming to fix the incident.
                 return {}
 
-        if patched == content:
+        if patched == source_content:
             return {}
 
         return {"rag_service/config.py": patched}

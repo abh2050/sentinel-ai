@@ -46,9 +46,29 @@ class SentinelOrchestrator:
         incident = validation_agent.run(incident)
         await asyncio.sleep(0.1)
 
+        # Halt before the pull request if validation did not pass.
+        #
+        # The safety covenant forbids overriding failed tests, and this is
+        # where that rule is actually enforced. Opening a PR whose scorecard
+        # says FAIL would push the judgement onto a reviewer who is being told
+        # by the surrounding UI that the fix is validated.
+        if incident.validation and not incident.validation.passed:
+            incident.status = IncidentStatus.VALIDATING
+            incident.agent_logs.append({
+                "timestamp": time.time(),
+                "agent": "Sentinel Orchestrator",
+                "event": "PULL_REQUEST_WITHHELD",
+                "details": (
+                    "Sandbox validation failed, so no pull request was opened. "
+                    "The proposed patch and its failing scorecard remain on the "
+                    "incident for manual review."
+                ),
+            })
+            return incident
+
         # 5. GitHub Integration Agent
         incident = github_agent.run(incident)
-        
+
         return incident
 
     def approve_and_merge_pr(self, incident_id: str, reviewer_name: str = "Human Lead SRE") -> IncidentRecord:

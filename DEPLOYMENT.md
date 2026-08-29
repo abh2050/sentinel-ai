@@ -14,14 +14,14 @@ Read [What Is Real and What Is Simulated](#what-is-real-and-what-is-simulated) f
 | **Canonical schema & unit reconciliation** | Production-ready | Extend the field mapping if you track extra metrics. |
 | **Data quality gates** | Production-ready | Tune thresholds to your traffic profile. |
 | **Anomaly detection** | Works, needs tuning | Baselines are static constants; replace with learned baselines. |
+| **Root cause analysis** | Production-ready | Set an Anthropic API key. Falls back to a rule set without one. |
 | **Pull request creation** | Production-ready | Set a GitHub token and repository. |
 | **Safety policy enforcement** | Production-ready | Review the permitted/forbidden action lists. |
-| **Diagnosis (root cause)** | **Demonstration only** | Rules are hardcoded to the shipped incident. Requires real implementation. |
-| **Remediation synthesis** | **Demonstration only** | Patches one known parameter. Requires real implementation. |
-| **Sandbox validation** | **Demonstration only** | Returns fixed results. Requires a real test runner. |
+| **Sandbox validation** | Production-ready | Runs the real test suite in an isolated copy. |
+| **Remediation synthesis** | **Demonstration only** | Patches one known parameter set. Requires real implementation. |
 | **RAG service (`rag_service/`)** | **Demonstration only** | A simulator. Delete it and point ingestion at your real service. |
 
-The honest summary: **the data pipeline, safety governance, and PR delivery are real infrastructure. The reasoning agents are a working skeleton with hardcoded logic for one incident type.** The interfaces they sit behind are designed for real implementations — see [Replacing the Demo Agents](#replacing-the-demo-agents).
+The honest summary: **the data pipeline, safety governance, PR delivery, sandbox validation, and root-cause analysis are real. Remediation synthesis is the remaining hardcoded piece**, and it sits behind an interface designed for a real implementation — see [Replacing the Remediation Agent](#replacing-the-remediation-agent).
 
 ---
 
@@ -188,39 +188,45 @@ Run **one instance**. The orchestrator, metrics collector, and dedup gate all ho
 
 ---
 
-## Replacing the Demo Agents
+## Connecting the Model
 
-The three agents with hardcoded logic sit behind clean interfaces. Each takes an `IncidentRecord` and returns an enriched one, so they can be replaced independently.
+The Diagnosis Agent uses Claude to determine root cause. Give it a key:
 
-### Diagnosis Agent
-
-Currently returns a fixed root cause. A real implementation correlates the anomaly with recent changes:
-
-```python
-class DiagnosisAgent:
-    def run(self, incident: IncidentRecord) -> IncidentRecord:
-        safety_enforcer.check_permission("RUN_DIAGNOSIS", self.agent_name)
-        # Correlate incident.detected_at against config history, deploys,
-        # and feature flags; attribute the change; populate DiagnosisReport
-        # with confidence and evidence_items.
+```bash
+ANTHROPIC_API_KEY=sk-ant-...
+SENTINEL_LLM_MODEL=claude-opus-5
+SENTINEL_LLM_EFFORT=high        # low | medium | high | xhigh | max
 ```
 
-Useful signals: config-management audit logs, deployment events, feature flag changes, and the telemetry already in `metrics_collector`.
+Without a key it falls back to a deterministic rule set, so the platform runs either way — but the fallback only understands the one incident type it ships with. `/api/health` reports which path is active, and every `DiagnosisReport` carries `llm_backed` and `analysis_source` so a reviewer can tell a model verdict from a rule-based one.
 
-### Remediation Agent
+### What the agent can and cannot do
 
-Must populate `RemediationProposal.file_changes` — a mapping of repository path to **complete new file content**, which is what actually gets committed. The `diff` field is only for display. The shipped implementation reads the live config file and rewrites two parameters with a regex; it returns an empty change set if the file no longer matches its expectations, which makes the GitHub client refuse to open a no-op PR.
+It holds four tools, all read-only: current metrics against baseline, the live retrieval config, recent configuration changes, and a runbook search. It decides which to call and when it has enough evidence, then submits a structured verdict through a `submit_diagnosis` tool.
 
-### Validation Agent
+**The tools cannot mutate anything.** That is the containment boundary: the worst outcome of a model mistake is a wrong explanation attached to an incident, never a wrong change to the service. The patch is produced by deterministic code downstream, and it still has to pass sandbox validation and human review before it reaches production.
 
-Currently returns fixed results. A real implementation must actually run the tests, because the entire safety argument depends on the scorecard being true:
+### Cost
 
-```python
-result = subprocess.run(["pytest", "tests/", "-q"], capture_output=True, timeout=600)
-passed = result.returncode == 0
-```
+One diagnosis is a handful of tool calls plus a verdict — a few cents at Opus pricing, once per incident. If that matters at your incident volume, drop `SENTINEL_LLM_EFFORT` to `medium`, or set `SENTINEL_LLM_MODEL=claude-sonnet-5`. Measure before assuming the cheaper setting is worse; root-cause analysis on a well-scoped incident is not a hard reasoning task.
 
-Run it against the patched code in an isolated environment (an ephemeral container or CI job), not in the SentinelAI process. **`ValidationResult.passed` must reflect a real run** — a scorecard that always says PASS turns human review into rubber-stamping, which is worse than no automation at all.
+### Extending it
+
+To diagnose incident types beyond retrieval misconfiguration, give the agent more tools rather than more prompt. Useful additions: deployment history, feature-flag state, upstream dependency health, and recent traces sampled around the incident window. The system prompt in `sentinel_core/integrations/llm_client.py` deliberately asks for mechanism rather than correlation — keep that framing when you extend it.
+
+---
+
+## Replacing the Remediation Agent
+
+Remediation is the remaining hardcoded stage: it patches one known parameter set. It sits behind a clean interface, so it can be replaced independently.
+
+It must populate `RemediationProposal.file_changes` — a mapping of repository path to **complete new file content**, which is what actually gets committed. The `diff` field is display-only.
+
+The shipped implementation reads the live config file and rewrites the retrieval parameters by regex, in **all four places they appear** — the two Pydantic field declarations and the two literals inside `reset_to_healthy_baseline()`. That last part matters: patching only the declarations leaves the reset function returning the old values, and since `clear_chaos()` calls it, the merged fix would be silently reverted the first time anything reset the service. If you write your own, check for the same class of partial patch.
+
+It returns an empty change set when the file no longer matches its expectations or when the fix is already applied. Empty makes the GitHub client refuse to open the pull request, which is correct — a PR that changes nothing while claiming to fix an incident is worse than no PR.
+
+**Using a model here is a bigger step than diagnosis.** Model-generated code goes into a commit, so the containment argument that makes the diagnosis agent safe does not carry over. If you do it, keep sandbox validation mandatory and treat the test suite as the real gate.
 
 ---
 

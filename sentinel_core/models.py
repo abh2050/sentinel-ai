@@ -41,6 +41,11 @@ class DiagnosisReport(BaseModel):
     evidence_items: List[str]
     suspect_file: str = "rag_service/config.py"
     suspect_changes: Dict[str, Any] = {}
+    # Provenance. A reviewer weighing an RCA needs to know whether a model
+    # produced it or a rule set did, and what the model actually looked at.
+    analysis_source: str = "deterministic"
+    llm_backed: bool = False
+    investigation_log: List[str] = []
     created_at: float = Field(default_factory=time.time)
 
 class RemediationProposal(BaseModel):
