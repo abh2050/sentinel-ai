@@ -15,7 +15,7 @@ export default function Navbar({ systemStatus, activeIncident, onOpenPRModal }) 
           <div>
             <div className="flex items-center gap-2">
               <span className="font-bold text-lg tracking-tight text-white">Sentinel<span className="text-blue-500">AI</span></span>
-              <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-mono font-medium">v1.0 FDE Engine</span>
+              <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[10px] font-mono font-medium">v1.0 Production Engine</span>
             </div>
             <p className="text-xs text-zinc-400 font-normal">Autonomous AI Reliability & Incident Response Platform</p>
           </div>
