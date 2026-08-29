@@ -6,9 +6,38 @@
 [![React](https://img.shields.io/badge/React-18-cyan)](dashboard/)
 [![Safety](https://img.shields.io/badge/AI_Safety-Human--in--the--Loop-amber)](sentinel_core/safety_policy.py)
 
-**SentinelAI** is an enterprise-grade autonomous reliability and incident remediation platform for **Agentic AI applications and production RAG pipelines**. It continuously monitors latency, token cost, retrieval volume, hallucination rates, and tool/agent execution failures.
+**SentinelAI** is an autonomous reliability platform for production AI systems — RAG pipelines and agentic workflows. It watches latency, cost, retrieval volume, and answer quality; when something regresses, it diagnoses the cause, writes and benchmarks a fix, and opens a pull request for a human to approve.
 
-When an incident is detected, SentinelAI autonomously isolates the root cause, synthesizes a surgical code or configuration remediation, benchmarks the fix in an isolated sandbox, and **opens a structured GitHub Pull Request with mandatory human review**.
+---
+
+## 🧭 Why This Exists
+
+Production AI systems fail in a way ordinary services don't: **they stay up while they break.**
+
+A conventional service tells you when something is wrong. It throws, it returns a 500, a health check goes red, someone gets paged. A RAG pipeline with a misconfigured retriever does none of that. It returns HTTP 200 on every request. The answers come back well-formed and plausible. It simply costs roughly 5x more per query, responds 5x slower, and grounds those answers in diluted context that makes them likelier to be subtly wrong. To an uptime monitor, the service looks perfectly healthy.
+
+That leaves three gaps standard observability doesn't close:
+
+**1. The signal is a correlated shift, not an error.**
+No single metric means much on its own — latency drifting up could be load, cost drifting up could be traffic mix. But latency *and* cost *and* retrieval volume rising together while groundedness falls is a specific, diagnosable failure. You only see it if you're watching them jointly, which means getting all four onto one timeline first — usually from different vendors, in different units.
+
+**2. A one-line config change has an enormous blast radius.**
+Raising retrieval `top_k` from 5 to 30 requires no code deploy and no review, and looks like a perfectly reasonable attempt to improve recall. In the incident this repo reproduces end to end, it drives p95 latency from **2.1s to 11.8s** and per-request cost from **$0.03 to $0.14** — a 366% budget overrun, with no exception and no stack trace pointing at the cause.
+
+**3. Detection is fast; diagnosis is slow.**
+Noticing that p95 moved takes seconds. Connecting "p95 moved" to "someone changed a retrieval parameter," then writing the fix, then *proving* the fix works without regressing answer quality — that's the part that burns hours of senior engineer time, usually at 2am.
+
+### What it does about it
+
+SentinelAI closes the gap between detection and a reviewable fix. By the time an engineer opens the incident, the correlation across metrics is done, the root cause is identified with supporting evidence, a patch is written, and it has already been benchmarked in a sandbox against both the incident metrics and a golden evaluation set.
+
+What's left for the human is the judgment call — which is the only part that actually needed a human.
+
+### Why it stops short of deploying
+
+The agents can detect, investigate, patch, test, and open a pull request. They are **structurally prevented** from merging it, pushing to a protected branch, or overriding a failed test — not by convention, but by a policy enforcer that raises on the attempt and writes the refusal to an audit trail.
+
+This is the deliberate design position of the project. An agent that can autonomously deploy to production converts a latency incident into an outage. Keeping a human on the merge means the system's worst failure mode is a bad pull request that someone declines — which is a normal Tuesday, not an incident.
 
 ---
 
@@ -22,7 +51,7 @@ When an incident is detected, SentinelAI autonomously isolates the root cause, s
 
 ![Telemetry ingestion pipeline](docs/screenshots/02-ingestion-pipeline.png)
 
-**Incident detected** — `top_k` drift pushes p95 latency from 2.4s to 11.8s (+462%) and the platform opens an incident automatically.
+**Incident detected** — `top_k` drift pushes p95 latency to 11.8s (+462%) and cost to $0.14/request. The platform opens an incident automatically; nothing errored.
 
 ![Incident detected](docs/screenshots/03-incident-detected.png)
 
@@ -38,16 +67,16 @@ When an incident is detected, SentinelAI autonomously isolates the root cause, s
 
 ---
 
-## 🌟 Key Capabilities for Agentic AI Systems
+## 🌟 How the Loop Is Built
 
-Operating autonomous agentic workflows and RAG systems in production presents unique failure modes: prompt/context explosion, cascading agent retries, hallucination drift, and unpredictable token costs. SentinelAI solves this through an autonomous closed-loop reliability architecture:
+Six components turn "a metric moved" into "a reviewed pull request":
 
-0. **Vendor-Agnostic Telemetry Ingestion**: A production data pipeline that connects to OpenTelemetry collectors, Prometheus, Datadog, and raw application logs, reconciles their conflicting units and schemas into one canonical record, and quarantines malformed data before it can corrupt the baseline.
-1. **Continuous Telemetry & Agent Observability**: OpenTelemetry-compatible tracking of p50/p95/p99 latency, per-request token costs, context chunk volume, agent tool execution spans, and RAG Triad scores (Groundedness, Context Relevance, Answer Quality).
-2. **Autonomous Multi-Agent Investigation**: Specialized agents for Detection & Triage, Root Cause Analysis (RCA), Remediation Synthesis, and Sandbox Validation.
-3. **Automated Sandbox Benchmarking**: Executes unit tests (`pytest`) and golden evaluation benchmarks in an isolated container sandbox before any proposed change is committed.
-4. **Automated Pull Request Remediation**: Generates clean git branches, commits, and rich Markdown PR descriptions with validation scorecards and before/after comparisons.
-5. **Hardcoded AI Safety Covenant**: Enforces strict enterprise governance—AI agents are permitted to investigate and propose fixes, but are **strictly prohibited from auto-merging or deploying without human sign-off**.
+1. **Vendor-Agnostic Telemetry Ingestion** — Connects to OpenTelemetry collectors, Prometheus, Datadog, and raw application logs; reconciles their conflicting units and schemas into one canonical record, and quarantines malformed data before it can corrupt the baseline. *Solves gap #1: getting every metric onto one timeline.*
+2. **Continuous Observability** — p50/p95/p99 latency, per-request token cost, context chunk volume, agent tool spans, and RAG Triad scores (Groundedness, Context Relevance, Answer Quality) tracked on a rolling window.
+3. **Multi-Metric Anomaly Detection** — Correlates simultaneous movement across latency, cost, retrieval volume, and quality against a healthy baseline, rather than alerting on any one of them in isolation.
+4. **Autonomous Multi-Agent Investigation** — Specialist agents for detection and triage, root-cause analysis, remediation synthesis, and sandbox validation. *Solves gap #3: the slow part.*
+5. **Sandbox Benchmarking** — Runs `pytest` and a golden evaluation set against the proposed patch, comparing before/after on the exact metrics that triggered the incident. A fix that regresses answer quality fails here, not in production.
+6. **Human-Gated Pull Requests** — Generates the branch, commit, and a Markdown PR body carrying the RCA, the diff, and the validation scorecard — then stops and waits for a person. *Solves gap #2: a config change that bypassed review comes back through it.*
 
 ---
 
@@ -143,7 +172,7 @@ sequenceDiagram
     SAFE-->>AGENT: permitted, written to audit trail
     AGENT->>AGENT: isolate root cause, synthesize patch
     AGENT->>AGENT: run pytest and golden evals in sandbox
-    AGENT-->>ORCH: validated fix, 11.8s down to 2.2s
+    AGENT-->>ORCH: validated fix, 11.8s down to 2.4s
 
     ORCH->>GH: open pull request
     GH->>SAFE: request AUTO_MERGE_PULL_REQUEST
