@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "Incident call chain: trigger to deployed fix",
+    "output": "docs/archify/sequence_diagram.html",
+    "viewBox": [980, 600],
+    "column_fit": "spread",
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "human-gate", "label": "The human-authorization gate", "focus": ["operator", "dashboard", "api", "orchestrator", "safety"], "note": "How approve_and_merge_pr actually bypasses the AI whitelist." }
+    ]
+  },
+  "participants": [
+    { "id": "operator", "type": "external", "label": "Operator", "sublabel": "dashboard user" },
+    { "id": "dashboard", "type": "frontend", "label": "Dashboard", "sublabel": "dashboard/src/App.jsx" },
+    { "id": "api", "type": "backend", "label": "FastAPI", "sublabel": "api/server.py" },
+    { "id": "anomaly", "type": "backend", "label": "AnomalyDetector", "sublabel": "baseline check" },
+    { "id": "orchestrator", "type": "backend", "label": "Orchestrator", "sublabel": "5-agent pipeline" },
+    { "id": "safety", "type": "security", "label": "SafetyEnforcer", "sublabel": "check_permission()" },
+    { "id": "github", "type": "external", "label": "GitHub API", "sublabel": "branch + PR" }
+  ],
+  "segments": [
+    { "from": 168, "to": 396, "label": "Trigger through PR opened" },
+    { "from": 396, "to": 520, "label": "Human review and merge" }
+  ],
+  "messages": [
+    { "from": "operator", "to": "dashboard", "y": 176, "label": "select chaos scenario" },
+    { "from": "dashboard", "to": "api", "y": 206, "label": "POST /api/chaos/trigger", "variant": "emphasis" },
+    { "from": "api", "to": "anomaly", "y": 236, "label": "check_for_anomalies()", "note": "only call site in the repo — no background loop calls this" },
+    { "from": "anomaly", "to": "api", "y": 266, "label": "incident payload, or null", "variant": "return" },
+    { "from": "api", "to": "orchestrator", "y": 296, "label": "handle_detected_incident(payload)", "variant": "emphasis" },
+    { "from": "orchestrator", "to": "safety", "y": 326, "label": "check_permission() — each of 5 agents, before acting", "variant": "dashed" },
+    { "from": "orchestrator", "to": "github", "y": 356, "label": "open_pull_request()", "note": "withheld entirely if sandbox tests fail or a metric regresses" },
+    { "from": "github", "to": "orchestrator", "y": 386, "label": "PR #N opened (live or simulated)", "variant": "return" },
+    { "from": "operator", "to": "dashboard", "y": 416, "label": "review diff + scorecard, click Approve" },
+    { "from": "dashboard", "to": "api", "y": 446, "label": "POST /pr/approve", "variant": "emphasis" },
+    { "from": "api", "to": "orchestrator", "y": 476, "label": "approve_and_merge_pr(id, reviewer)", "variant": "emphasis" },
+    { "from": "orchestrator", "to": "safety", "y": 506, "label": "check_permission(action, actor=HUMAN_OPERATOR)", "variant": "security", "note": "actor bypass — the whitelist is never consulted; no AI code path ever requests AUTO_MERGE_PULL_REQUEST" }
+  ],
+  "activations": [
+    { "participant": "api", "from": 222, "to": 320, "type": "backend" },
+    { "participant": "orchestrator", "from": 290, "to": 400, "type": "backend" },
+    { "participant": "api", "from": 454, "to": 520, "type": "backend" },
+    { "participant": "orchestrator", "from": 470, "to": 520, "type": "backend" }
+  ]
+}

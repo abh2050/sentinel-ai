@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "Telemetry ingestion ETL pipeline",
+    "output": "docs/archify/dataflow_diagram.html",
+    "viewBox": [1070, 560],
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "fan-in", "label": "Three vendors, one schema", "focus": ["otlp", "metrics_apis", "jsonl_src", "connector", "mapping"], "note": "Every connector normalizes to the same CanonicalTelemetryRecord before anything downstream sees it." },
+      { "id": "quality-gates", "label": "What gets rejected, and why", "focus": ["transforms", "gates", "dead_letter"], "note": "Four ordered gates; every rejection is a named reason, not a silent drop." }
+    ]
+  },
+  "stages": [
+    { "label": "Sources (fixtures)" },
+    { "label": "Extract" },
+    { "label": "Normalize + Enrich" },
+    { "label": "Validate" },
+    { "label": "Load" }
+  ],
+  "nodes": [
+    { "id": "otlp", "type": "external", "label": "OTLP spans", "sublabel": "otel-collector", "stage": 0, "row": 0 },
+    { "id": "metrics_apis", "type": "external", "label": "Prometheus + Datadog", "sublabel": "pre-aggregated series", "stage": 0, "row": 1, "width": 150 },
+    { "id": "jsonl_src", "type": "external", "label": "App JSONL log", "sublabel": "rag_events", "stage": 0, "row": 2 },
+
+    { "id": "connector", "type": "backend", "label": "TelemetryConnector.read()", "sublabel": "map + watermark", "stage": 1, "row": 1, "width": 190 },
+
+    { "id": "mapping", "type": "backend", "label": "SourceMapping", "sublabel": "canonical units", "stage": 2, "row": 0 },
+    { "id": "transforms", "type": "backend", "label": "Enrich transforms", "sublabel": "derive tokens, cost, env", "stage": 2, "row": 2 },
+
+    { "id": "gates", "type": "security", "label": "Quality Gates", "sublabel": "4 ordered gates", "stage": 3, "row": 1, "width": 170 },
+    { "id": "dead_letter", "type": "database", "label": "Dead-letter samples", "sublabel": "named rejection reason", "stage": 3, "row": 2 },
+
+    { "id": "metrics_sink", "type": "database", "label": "MetricsCollector", "sublabel": "live rolling window", "stage": 4, "row": 0 },
+    { "id": "jsonl_sink", "type": "database", "label": "JSONL landing zone", "sublabel": "data/landing/*.jsonl", "stage": 4, "row": 2 }
+  ],
+  "flows": [
+    { "id": "otlp-flow", "from": "otlp", "to": "connector", "label": "spans", "fromSide": "right", "toSide": "left" },
+    { "id": "metrics-flow", "from": "metrics_apis", "to": "connector", "label": "series", "route": "straight", "labelAt": [268, 238] },
+    { "id": "jsonl-flow", "from": "jsonl_src", "to": "connector", "label": "log lines", "fromSide": "right", "toSide": "left" },
+    { "from": "connector", "to": "mapping", "label": "mapping.apply()" },
+    { "from": "connector", "to": "transforms", "label": "CanonicalTelemetryRecord", "route": "vertical-channel" },
+    { "from": "mapping", "to": "gates", "label": "record", "route": "vertical-channel" },
+    { "from": "transforms", "to": "gates", "label": "enriched record" },
+    { "from": "gates", "to": "dead_letter", "label": "rejected, reason", "classification": "quarantine", "variant": "security", "labelDy": 24 },
+    { "from": "gates", "to": "metrics_sink", "label": "accepted, event-time order", "classification": "canonical", "variant": "emphasis", "route": "vertical-channel" },
+    { "from": "gates", "to": "jsonl_sink", "label": "accepted, event-time order", "classification": "canonical", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "One canonical record, four vendors", "items": ["Every connector maps to CanonicalTelemetryRecord in seconds, USD, and 0–100 — never each vendor's native units", "A fetch failure is captured per connector; one dead backend doesn't stop the other three (ingestion/connectors/base.py)"] },
+    { "dot": "amber", "title": "Rejection is a decision, not a drop", "items": ["Gates run cheapest-first: completeness, range, freshness, then dedup (ingestion/validation.py:default_gates)", "Every rejection carries a named reason and lands in a bounded dead-letter sample, not /dev/null"] }
+  ]
+}
