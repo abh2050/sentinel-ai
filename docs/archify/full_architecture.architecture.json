@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "SentinelAI runtime architecture",
+    "output": "docs/archify/full_architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/abh2050/sentinel-ai",
+      "revision": "c5a93a02850cfe11eaa0c4b05554945074341b13"
+    },
+    "viewBox": [1150, 730]
+  },
+  "components": [
+    { "id": "browser", "type": "external", "label": "Operator browser", "sublabel": "HTTPS client", "pos": [30, 170], "size": [140, 80], "sources": [{ "path": "dashboard/src/App.jsx", "label": "browser requests" }] },
+    { "id": "dashboard", "type": "frontend", "label": "React dashboard", "sublabel": "dashboard/src", "pos": [200, 170], "size": [170, 80], "sources": [{ "path": "dashboard/src/main.jsx", "label": "React bootstrap" }, { "path": "dashboard/src/App.jsx", "line": 15, "end_line": 89, "label": "API calls" }] },
+    { "id": "api", "type": "backend", "label": "FastAPI mission control", "sublabel": "api.server:app", "pos": [400, 170], "size": [190, 90], "sources": [{ "path": "api/server.py", "line": 95, "end_line": 134, "label": "app + API-key gate" }, { "path": "api/server.py", "line": 260, "end_line": 311, "label": "incident + review routes" }] },
+    { "id": "sources", "type": "external", "label": "Configured telemetry backends", "sublabel": "OTLP / Prometheus / Datadog / JSONL", "pos": [650, 30], "size": [240, 80], "sources": [{ "path": "config/ingestion_sources.json", "label": "source catalog" }, { "path": "ingestion/connectors/registry.py", "label": "connector registry" }] },
+    { "id": "ingest", "type": "backend", "label": "IngestionService + pipeline", "sublabel": "extract → normalize → validate → load", "pos": [650, 170], "size": [240, 90], "sources": [{ "path": "api/ingestion_service.py", "line": 28, "end_line": 68, "label": "pipeline + sinks" }, { "path": "ingestion/pipeline.py", "line": 114, "end_line": 168, "label": "run_once" }] },
+    { "id": "landing", "type": "database", "label": "sentinel-landing volume", "sublabel": "canonical_telemetry.jsonl", "pos": [930, 175], "size": [170, 80], "sources": [{ "path": "docker-compose.yml", "line": 21, "end_line": 40, "label": "named volume" }, { "path": "api/ingestion_service.py", "line": 25, "label": "landing path" }] },
+    { "id": "metrics", "type": "database", "label": "MetricsCollector", "sublabel": "in-memory rolling window", "pos": [30, 460], "size": [190, 90], "sources": [{ "path": "ingestion/sinks.py", "line": 35, "end_line": 61, "label": "metrics sink" }, { "path": "observability/metrics_collector.py", "label": "collector" }] },
+    { "id": "anomaly", "type": "backend", "label": "AnomalyDetector", "sublabel": "baseline checks", "pos": [270, 460], "size": [180, 90], "sources": [{ "path": "api/server.py", "line": 239, "end_line": 242, "label": "anomaly trigger" }, { "path": "observability/anomaly_detector.py", "label": "detector" }] },
+    { "id": "orchestrator", "type": "backend", "label": "SentinelOrchestrator", "sublabel": "5-stage agent pipeline", "pos": [500, 460], "size": [260, 90], "sources": [{ "path": "sentinel_core/orchestrator.py", "line": 28, "end_line": 72, "label": "agent sequence" }] },
+    { "id": "safety", "type": "security", "label": "SafetyPolicyEnforcer", "sublabel": "permission checks + audit trail", "pos": [500, 600], "size": [260, 80], "sources": [{ "path": "sentinel_core/safety_policy.py", "label": "action permissions" }, { "path": "sentinel_core/orchestrator.py", "line": 74, "end_line": 125, "label": "human approval/rejection" }] },
+    { "id": "llm", "type": "external", "label": "Anthropic API", "sublabel": "optional diagnosis provider", "pos": [810, 320], "size": [190, 70], "sources": [{ "path": "sentinel_core/integrations/llm_client.py", "label": "Anthropic client" }, { "path": "sentinel_core/settings.py", "label": "ANTHROPIC_API_KEY" }] },
+    { "id": "github", "type": "external", "label": "GitHub API", "sublabel": "branch + pull request", "pos": [810, 460], "size": [190, 90], "sources": [{ "path": "sentinel_core/integrations/github_client.py", "label": "GitHub client" }, { "path": "sentinel_core/agents/github_agent.py", "label": "PR agent" }] }
+  ],
+  "connections": [
+    { "from": "browser", "to": "dashboard", "label": "HTTPS" },
+    { "from": "dashboard", "to": "api", "label": "GET/POST /api/*", "labelAt": [385, 270] },
+    { "from": "api", "to": "ingest", "label": "/api/ingestion/run or poll loop", "labelAt": [620, 150] },
+    { "from": "sources", "to": "ingest", "label": "connector reads", "fromSide": "bottom", "toSide": "top", "labelAt": [770, 124] },
+    { "from": "ingest", "to": "landing", "label": "append canonical JSONL", "labelAt": [910, 150] },
+    { "from": "ingest", "to": "metrics", "label": "load canonical records", "fromSide": "bottom", "toSide": "top", "via": [[770, 290], [125, 290]], "labelAt": [420, 280] },
+    { "from": "metrics", "to": "anomaly", "label": "get_current_metrics()", "labelAt": [245, 444] },
+    { "from": "anomaly", "to": "orchestrator", "label": "handle_detected_incident()", "labelAt": [475, 444] },
+    { "from": "orchestrator", "to": "safety", "label": "check_permission()", "variant": "security", "fromSide": "bottom", "toSide": "top", "labelAt": [630, 564] },
+    { "from": "orchestrator", "to": "llm", "label": "diagnose() when enabled", "fromSide": "top", "toSide": "bottom", "via": [[630, 410], [905, 410]], "labelAt": [720, 404] },
+    { "from": "orchestrator", "to": "github", "label": "create branch + PR", "fromSide": "right", "toSide": "left", "labelAt": [785, 444] }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Deployment facts", "items": ["docker-compose.yml defines one sentinel service on port 8000; Dockerfile builds the dashboard and ships it with the Python runtime.", "Config is mounted read-only at /app/config; only /app/data/landing is documented as writable in the image.", "No cloud provider, reverse proxy, identity provider, queue, or persistent incident database is defined in this repository."] }
+  ]
+}

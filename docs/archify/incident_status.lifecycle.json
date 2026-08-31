@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "Incident status lifecycle",
+    "output": "docs/archify/incident_status.html",
+    "viewBox": [980, 600],
+    "quality_profile": "showcase",
+    "views": [
+      { "id": "main-rail", "label": "The ordered rail", "focus": ["investigating", "diagnosed", "remediating", "validating", "awaiting_review", "deployed"], "note": "Five IncidentStatus values, assigned in this exact order by five different agents." },
+      { "id": "one-status-two-causes", "label": "One status, two real causes", "focus": ["validating", "halted"], "note": "A failed sandbox and a dead GitHub API both leave the incident at VALIDATING — there is no distinct FAILED status." }
+    ]
+  },
+  "lanes": [
+    { "id": "main", "label": "sentinel_core.models.IncidentStatus" },
+    { "id": "outcomes", "label": "Halted / terminal" }
+  ],
+  "states": [
+    { "id": "investigating", "type": "start", "label": "INVESTIGATING", "sublabel": "detection_agent.run()", "lane": "main", "col": 0, "step": "1" },
+    { "id": "diagnosed", "type": "active", "label": "DIAGNOSED", "sublabel": "diagnosis_agent.run()", "lane": "main", "col": 1, "step": "2" },
+    { "id": "remediating", "type": "active", "label": "REMEDIATING", "sublabel": "remediation_agent.run()", "lane": "main", "col": 2, "step": "3" },
+    { "id": "validating", "type": "decision", "label": "VALIDATING", "sublabel": "validation_agent.run()", "lane": "main", "col": 3, "step": "4" },
+    { "id": "awaiting_review", "type": "decision", "label": "AWAITING_HUMAN_REVIEW", "sublabel": "github_agent.run() opened a PR", "lane": "main", "col": 4, "step": "5", "width": 150 },
+
+    { "id": "halted", "type": "failure", "label": "VALIDATING (halted)", "sublabel": "no distinct FAILED status", "lane": "outcomes", "col": 1, "width": 140 },
+    { "id": "deployed", "type": "success", "label": "DEPLOYED", "sublabel": "config applied to production", "lane": "outcomes", "col": 2, "yOffset": 0 },
+    { "id": "rejected", "type": "failure", "label": "REJECTED", "sublabel": "terminal — not reopened", "lane": "outcomes", "col": 2, "yOffset": 100 }
+  ],
+  "transitions": [
+    { "from": "investigating", "to": "diagnosed" },
+    { "from": "diagnosed", "to": "remediating" },
+    { "from": "remediating", "to": "validating" },
+    { "from": "validating", "to": "awaiting_review", "variant": "emphasis", "fromSide": "top", "toSide": "top", "route": "top-channel" },
+    { "from": "validating", "to": "halted", "label": "tests failed, regressed, or GitHubError", "variant": "security", "labelAt": [556, 202] },
+    { "from": "awaiting_review", "to": "deployed", "label": "human approves", "fromSide": "bottom", "toSide": "top", "labelAt": [710, 216] },
+    { "from": "awaiting_review", "to": "rejected", "label": "human rejects", "route": "right-channel" },
+    { "from": "halted", "to": "investigating", "label": "manual re-run", "variant": "dashed", "route": "bottom-channel" },
+    { "from": "rejected", "to": "investigating", "label": "manual re-run", "variant": "dashed", "route": "bottom-channel" }
+  ],
+  "cards": [
+    { "dot": "rose", "title": "Two things the enum and the README both overstate", "items": ["DETECTED, PR_CREATED, and APPROVED exist in IncidentStatus but no code path ever assigns them", "reject_pr() sets REJECTED and stops — nothing reopens the investigation automatically; a human must call run-agents, which restarts detection from scratch"] }
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Agent orchestration pipeline and safety covenant",
+    "output": "docs/archify/agent_pipeline.html",
+    "quality_profile": "showcase",
+    "views": [
+      {
+        "id": "happy-path",
+        "label": "Happy path",
+        "focus": [
+          "trigger",
+          "detect",
+          "diagnose",
+          "remediate",
+          "validate",
+          "open_pr",
+          "human_review",
+          "deployed"
+        ],
+        "note": "Detection through a human-approved merge, in call order."
+      },
+      {
+        "id": "safety-covenant",
+        "label": "Safety covenant checks",
+        "focus": [
+          "detect",
+          "diagnose",
+          "remediate",
+          "validate",
+          "open_pr",
+          "safety_gate",
+          "human_review",
+          "deployed",
+          "rejected"
+        ],
+        "note": "Every agent calls check_permission before acting; humans bypass the AI whitelist by actor, not by a granted exception."
+      }
+    ]
+  },
+  "lanes": [
+    {
+      "id": "agents",
+      "label": "Sentinel Agent Pipeline"
+    },
+    {
+      "id": "safety",
+      "label": "Safety Covenant"
+    },
+    {
+      "id": "human",
+      "label": "Human Review"
+    },
+    {
+      "id": "outcomes",
+      "label": "Outcome"
+    }
+  ],
+  "mainPath": [
+    "trigger",
+    "detect",
+    "diagnose",
+    "remediate",
+    "validate",
+    "open_pr",
+    "human_review",
+    "deployed"
+  ],
+  "nodes": [
+    {
+      "id": "trigger",
+      "lane": "agents",
+      "col": 0,
+      "width": 110,
+      "type": "messagebus",
+      "label": "Anomaly Detected",
+      "sublabel": "check_for_anomalies()"
+    },
+    {
+      "id": "detect",
+      "lane": "agents",
+      "col": 1,
+      "width": 110,
+      "type": "backend",
+      "label": "Detection Agent",
+      "sublabel": "triage + severity"
+    },
+    {
+      "id": "diagnose",
+      "lane": "agents",
+      "col": 2,
+      "width": 110,
+      "type": "backend",
+      "label": "Diagnosis Agent",
+      "sublabel": "LLM RCA, rule fallback"
+    },
+    {
+      "id": "remediate",
+      "lane": "agents",
+      "col": 3,
+      "width": 120,
+      "type": "backend",
+      "label": "Remediation Agent",
+      "sublabel": "synthesize config patch"
+    },
+    {
+      "id": "validate",
+      "lane": "agents",
+      "col": 4,
+      "width": 120,
+      "type": "backend",
+      "label": "Validation Agent",
+      "sublabel": "sandbox tests + benchmark"
+    },
+    {
+      "id": "open_pr",
+      "lane": "agents",
+      "col": 5,
+      "width": 110,
+      "type": "backend",
+      "label": "GitHub Agent",
+      "sublabel": "branch, commit, open PR"
+    },
+    {
+      "id": "safety_gate",
+      "lane": "safety",
+      "col": 0,
+      "width": 220,
+      "type": "security",
+      "label": "SafetyPolicyEnforcer",
+      "sublabel": "check_permission()"
+    },
+    {
+      "id": "pr_withheld",
+      "lane": "human",
+      "col": 4,
+      "width": 135,
+      "type": "backend",
+      "label": "PR Withheld",
+      "sublabel": "tests failed or regressed"
+    },
+    {
+      "id": "human_review",
+      "lane": "human",
+      "col": 5,
+      "width": 130,
+      "type": "external",
+      "label": "Lead SRE Engineer",
+      "sublabel": "reviews diff + scorecard"
+    },
+    {
+      "id": "deployed",
+      "lane": "outcomes",
+      "col": 5,
+      "width": 130,
+      "type": "cloud",
+      "label": "Fix Deployed",
+      "sublabel": "top_k=8, reranker on"
+    },
+    {
+      "id": "rejected",
+      "lane": "outcomes",
+      "col": 4,
+      "width": 110,
+      "type": "external",
+      "label": "Rejected",
+      "sublabel": "incident stays open"
+    }
+  ],
+  "edges": [
+    {
+      "from": "trigger",
+      "to": "detect",
+      "role": "main"
+    },
+    {
+      "from": "detect",
+      "to": "diagnose",
+      "role": "main"
+    },
+    {
+      "from": "diagnose",
+      "to": "remediate",
+      "role": "main"
+    },
+    {
+      "from": "remediate",
+      "to": "validate",
+      "role": "main"
+    },
+    {
+      "from": "validate",
+      "to": "open_pr",
+      "label": "passed",
+      "role": "main"
+    },
+    {
+      "from": "validate",
+      "to": "pr_withheld",
+      "label": "failed",
+      "variant": "security",
+      "role": "error"
+    },
+    {
+      "from": "open_pr",
+      "to": "human_review",
+      "role": "main"
+    },
+    {
+      "from": "human_review",
+      "to": "deployed",
+      "label": "approve → /pr/approve",
+      "role": "main"
+    },
+    {
+      "from": "human_review",
+      "to": "rejected",
+      "label": "reject → /pr/reject",
+      "variant": "dashed",
+      "role": "branch"
+    },
+    {
+      "from": "detect",
+      "to": "safety_gate",
+      "label": "check_permission() — every agent",
+      "variant": "dashed"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "rose",
+      "title": "The merge block is structural",
+      "items": [
+        "No code path ever requests AUTO_MERGE_PULL_REQUEST as an AI actor; merging sits behind POST /pr/approve, where actor==\"HUMAN_OPERATOR\" skips the whitelist (sentinel_core/safety_policy.py)"
+      ]
+    }
+  ]
+}
