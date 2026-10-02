@@ -9,6 +9,10 @@
 
 **SentinelAI** is an autonomous reliability platform for production AI systems — RAG pipelines and agentic workflows. It watches latency, cost, retrieval volume, and answer quality; when something regresses, it diagnoses the cause, writes and benchmarks a fix, and opens a pull request for a human to approve.
 
+[![Watch the 20-second SentinelAI launch video](docs/video/sentinelai-launch.jpg)](docs/video/sentinelai-launch.mp4)
+
+*Click to watch the 20-second launch video: a `top_k` regression is caught, diagnosed, fixed and benchmarked, and then a human merges the fix.*
+
 ---
 
 ## Why This Exists
