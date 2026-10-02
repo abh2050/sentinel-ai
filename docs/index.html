@@ -86,6 +86,20 @@
     border: 0;
     display: block;
   }
+  .video-pane {
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: #09090b;
+  }
+  .video-pane video {
+    max-width: 100%;
+    max-height: 100%;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    background: #09090b;
+  }
   .loading {
     position: absolute;
     inset: 0;
@@ -102,7 +116,8 @@
 <body>
 <div class="topbar" role="tablist">
   <div class="brand">Sentinel<span>AI</span> Diagrams</div>
-      <button class="tab active" data-target="architecture" role="tab" aria-selected="true">Architecture</button>
+      <button class="tab active" data-target="video" role="tab" aria-selected="true">Launch Video</button>
+      <button class="tab" data-target="architecture" role="tab" aria-selected="false">Architecture</button>
       <button class="tab" data-target="workflow" role="tab" aria-selected="false">Workflow</button>
       <button class="tab" data-target="sequence" role="tab" aria-selected="false">Sequence</button>
       <button class="tab" data-target="dataflow" role="tab" aria-selected="false">Dataflow</button>
@@ -110,7 +125,10 @@
 </div>
 <main>
   <div class="loading" id="loading">Loading…</div>
-    <iframe class="pane" id="frame-architecture" title="Architecture" style="display:block"></iframe>
+    <div class="pane video-pane" id="frame-video" style="display:flex">
+      <video id="launch-video" src="video/sentinelai-launch.mp4" poster="video/sentinelai-launch.jpg" controls autoplay muted loop playsinline preload="metadata"></video>
+    </div>
+    <iframe class="pane" id="frame-architecture" title="Architecture" style="display:none"></iframe>
     <iframe class="pane" id="frame-workflow" title="Workflow" style="display:none"></iframe>
     <iframe class="pane" id="frame-sequence" title="Sequence" style="display:none"></iframe>
     <iframe class="pane" id="frame-dataflow" title="Dataflow" style="display:none"></iframe>
@@ -125,7 +143,7 @@
 
 <script>
 (function() {
-  var keys = ["architecture", "workflow", "sequence", "dataflow", "lifecycle"];
+  var keys = ["video", "architecture", "workflow", "sequence", "dataflow", "lifecycle"];
   var loaded = {};
 
   function decodeToBlobUrl(key) {
@@ -145,9 +163,13 @@
       var active = k === key;
       btn.classList.toggle("active", active);
       btn.setAttribute("aria-selected", active ? "true" : "false");
-      frame.style.display = active ? "block" : "none";
+      frame.style.display = active ? (k === "video" ? "flex" : "block") : "none";
     });
-    if (!loaded[key]) {
+    var video = document.getElementById("launch-video");
+    if (key !== "video") video.pause();
+    if (key === "video") {
+      document.getElementById("loading").style.display = "none";
+    } else if (!loaded[key]) {
       var loadingEl = document.getElementById("loading");
       loadingEl.style.display = "flex";
       var frame = document.getElementById("frame-" + key);
